@@ -22,8 +22,8 @@ export type EntityUpdateOptions = {
     entities: Entity[],
 };
 
-export type Component = {
-    update: (data: EntityData, options: EntityUpdateOptions) => void,
-    draw: (data: EntityData, options: EntityDrawOptions) => void,
-    start?: (data: EntityData) => void,
+export type Component<T extends EntityData> = {
+    update: (data: T, options: EntityUpdateOptions) => void,
+    draw: (data: T, options: EntityDrawOptions) => void,
+    start?: (data: T) => void,
 }

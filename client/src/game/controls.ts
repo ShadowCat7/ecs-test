@@ -1,9 +1,10 @@
-import { buttons as BUTTONS } from "../constants/controls.js";
+import { buttons as BUTTONS, Button } from "../constants/controls.js";
 import { Dictionary } from "../util/utilTypes.js";
 import { ControlHistoryItem, Controls, Mouse } from "./types.js";
 
-const controlMap: Dictionary<string, string> = {
+const controlMap: Dictionary<string, Button> = {
     'LeftClick': BUTTONS.click,
+    'KeyM': BUTTONS.map,
     'KeyW': BUTTONS.up,
     'KeyA': BUTTONS.left,
     'KeyS': BUTTONS.down,
@@ -34,9 +35,11 @@ export const createControls = () => {
     return {
         update: (buttonsPressed: Dictionary<string, boolean>, mouse: Mouse) => {
             for (let button in buttonsPressed) {
-                const buttonControl = controlMap[button] ?? 'undefined';
+                const buttonControl = controlMap[button];
 
-                updateControl(controls.buttons[buttonControl], buttonsPressed[button]!);
+                if (buttonControl) {
+                    updateControl(controls.buttons[buttonControl], buttonsPressed[button]!);
+                }
             }
 
             updateControl(controls.buttons[BUTTONS.click], mouse.leftClick);

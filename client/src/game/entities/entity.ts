@@ -1,11 +1,11 @@
 import { Component, EntityData, EntityDrawOptions, EntityUpdateOptions } from "./types.js";
 
-export type CreateEntityOptions = {
-    data: EntityData,
-    components: Component[],
+export type CreateEntityOptions<T extends EntityData> = {
+    data: T,
+    components: Component<T>[],
 }
 
-export const createEntity = (options: CreateEntityOptions) => {
+export const createEntity = <T extends EntityData>(options: CreateEntityOptions<T>) => {
     const {
         components,
         data: initialData,

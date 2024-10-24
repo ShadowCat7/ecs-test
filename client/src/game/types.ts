@@ -1,3 +1,4 @@
+import { Button } from "../constants/controls.js";
 import { Dictionary } from "../util/utilTypes.js";
 
 export type ControlHistoryItem = {
@@ -5,7 +6,7 @@ export type ControlHistoryItem = {
     current: boolean,
 }
 
-export type ButtonControls = Dictionary<string, ControlHistoryItem>;
+export type ButtonControls = Dictionary<Button, ControlHistoryItem>;
 
 export type Controls = {
     mouse: [number, number],
