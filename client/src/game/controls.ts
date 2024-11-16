@@ -1,6 +1,6 @@
 import { buttons as BUTTONS, Button } from "../constants/controls.js";
 import { Dictionary } from "../util/utilTypes.js";
-import { ControlHistoryItem, Controls, Mouse } from "./types.js";
+import { ButtonControls, ControlHistoryItem, Controls, Mouse } from "./types.js";
 
 const controlMap: Dictionary<string, Button> = {
     'LeftClick': BUTTONS.click,
@@ -17,20 +17,25 @@ const updateControl = (control: ControlHistoryItem | undefined, value: boolean) 
     control.current = value;
 }
 
-export const createControls = () => {
-    const controls: Controls = {
-        mouse: [0, 0],
-        buttons: {},
+const controls: Controls = {
+    mouse: [0, 0],
+    buttons: {} as ButtonControls,
+};
+
+const { buttons } = controls;
+
+for (let control of Object.values(BUTTONS)) {
+    buttons[control] = {
+        previous: false,
+        current: false,
     };
+}
 
-    const { buttons } = controls;
+export const getControls = () => controls;
 
-    for (let control of Object.values(BUTTONS)) {
-        buttons[control] = {
-            previous: false,
-            current: false,
-        };
-    }
+export const createControls = () => {
+    
+
 
     return {
         update: (buttonsPressed: Dictionary<string, boolean>, mouse: Mouse) => {

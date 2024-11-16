@@ -1,4 +1,4 @@
-import { distance } from "../physics/distance.js";
+import { distance } from "../../physics/distance.js";
 
 export const createMoveToComponent = () => {
     return {

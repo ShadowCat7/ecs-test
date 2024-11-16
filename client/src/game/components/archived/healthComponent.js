@@ -1,6 +1,6 @@
-import { drawRectangle } from "../draw/drawRectangle.js";
-import { drawText } from "../draw/drawText.js";
-import { addDraw, DRAW_ORDER } from "../draw/orderedDraw.js";
+import { drawRectangle } from "../../draw/drawRectangle.js";
+import { drawText } from "../../draw/drawText.js";
+import { addDraw, DRAW_ORDER } from "../../draw/orderedDraw.js";
 
 const HEALTH_TIMER = 1;
 

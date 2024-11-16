@@ -1,5 +1,5 @@
-import { CONTROLS } from "../../constants/controls.js";
-import { isPointInRectangle } from "../physics/rectangle.js";
+import { CONTROLS } from "../../../constants/controls.js";
+import { isPointInRectangle } from "../../physics/rectangle.js";
 
 export const createDraggableComponent = () => {
     return {

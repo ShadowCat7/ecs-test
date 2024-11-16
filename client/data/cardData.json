@@ -1,0 +1,71 @@
+[
+    {
+        "type": "take1",
+        "components": [
+            {
+                "type": "cards/takeStick",
+                "sticks": 1
+            }
+        ],
+        "renders": [
+            {
+                "type": "text",
+                "x": 10,
+                "y": 10,
+                "z": 1,
+                "text": "1"
+            }
+        ],
+        "prefabs": [
+            {
+                "type": "card"
+            }
+        ]
+    },
+    {
+        "type": "take2",
+        "components": [
+            {
+                "type": "cards/takeStick",
+                "sticks": 2
+            }
+        ],
+        "renders": [
+            {
+                "type": "text",
+                "x": 10,
+                "y": 10,
+                "z": 1,
+                "text": "2"
+            }
+        ],
+        "prefabs": [
+            {
+                "type": "card"
+            }
+        ]
+    },
+    {
+        "type": "take3",
+        "components": [
+            {
+                "type": "cards/takeStick",
+                "sticks": 3
+            }
+        ],
+        "renders": [
+            {
+                "type": "text",
+                "x": 10,
+                "y": 10,
+                "z": 1,
+                "text": "3"
+            }
+        ],
+        "prefabs": [
+            {
+                "type": "card"
+            }
+        ]
+    }
+]

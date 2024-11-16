@@ -1,11 +1,11 @@
-import { CONTROLS } from "../../constants/controls.js";
-import { gridSize } from "../../constants/game.js";
-import { drawLine } from "../draw/drawLine.js";
-import { drawText } from "../draw/drawText.js";
-import { addDraw, DRAW_ORDER } from "../draw/orderedDraw.js";
-import { midpoint } from "../physics/distance.js";
-import { getDiagonalDiff, gridDistance, snapToGrid } from "../physics/grid.js";
-import { isPointInRectangle } from "../physics/rectangle.js";
+import { CONTROLS } from "../../../constants/controls.js";
+import { gridSize } from "../../../constants/game.js";
+import { drawLine } from "../../draw/drawLine.js";
+import { drawText } from "../../draw/drawText.js";
+import { addDraw, DRAW_ORDER } from "../../draw/orderedDraw.js";
+import { midpoint } from "../../physics/distance.js";
+import { getDiagonalDiff, gridDistance, snapToGrid } from "../../physics/grid.js";
+import { isPointInRectangle } from "../../physics/rectangle.js";
 
 export const createCombatCharacterControlledComponent = () => {
     let isNotTargeting = true;

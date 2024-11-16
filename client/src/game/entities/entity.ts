@@ -1,37 +1,60 @@
-import { Component, EntityData, EntityDrawOptions, EntityUpdateOptions } from "./types.js";
+import { DrawOptions } from "../draw/types.js";
+import { Prefab } from "../prefabs/types.js";
+import { Render } from "../render/types.js";
+import { Component, Entity, UpdateOptions } from "../types.js";
 
-export type CreateEntityOptions<T extends EntityData> = {
-    data: T,
-    components: Component<T>[],
+export type CreateEntityOptions = {
+    id?: string,
+    components?: Component[],
+    data?: {
+        x?: number,
+        y?: number,
+    },
+    render: (entity: Entity, options: DrawOptions) => void,
+    script?: (entity: Entity, options: UpdateOptions) => void,
 }
 
-export const createEntity = <T extends EntityData>(options: CreateEntityOptions<T>) => {
-    const {
-        components,
-        data: initialData,
-    } = options;
+const getComponents = (prefab: Prefab, components: Component[]) => {
+    components.push(...prefab.components.map(x => x()));
 
-    const data = {
-        ...initialData,
-        id: Symbol(),
+    if (!prefab.prefabs?.length) return;
+
+    for (const p of prefab.prefabs) {
+        getComponents(p, components);
+    }
+}
+
+export const createEntity = (x: number, y: number, prefab?: Prefab, shapes?: Render[]) => {
+    const id = Math.random().toString().substring(2);
+
+    const components: Component[] = [];
+    const componentsByType = new Map<string, Component>();
+
+    const entity: Entity = {
+        x,
+        y,
+        rotation: 0,
+        id,
+        visible: true,
+        components,
+        renders: shapes,
+        update: (options: UpdateOptions) => { },
+        prefab,
+        getComponent: <T extends Component>(type: string) => componentsByType.get(type) as T | undefined,
+        addComponent: (component: Component) => {
+            component.entityId = id;
+            components.push(component);
+            componentsByType.set(component.type, component);
+        },
     };
 
+    if (prefab)
+        getComponents(prefab, components);
+
     for (let component of components) {
-        if (component.start)
-            component.start(data);
+        component.entityId = id;
+        componentsByType.set(component.type, component);
     }
 
-    return {
-        getData: () => data,
-        draw: (options: EntityDrawOptions) => {
-            for (let component of components) {
-                component.draw(data, options);
-            }
-        },
-        update: (options: EntityUpdateOptions) => {
-            for (let component of components) {
-                component.update(data, options);
-            }
-        }
-    }
+    return entity;
 }

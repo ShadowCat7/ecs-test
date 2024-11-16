@@ -2,7 +2,6 @@ import { drawText } from './draw/drawText.js';
 import { Engine, createEngine } from './engine.js';
 // import loadImages from '../sprites/image-loader.js';
 import { createControls } from './controls.js';
-import { drawInstructions } from './draw/orderedDraw.js';
 import { Mouse, UpdateOptions } from './types.js';
 
 let engine: Engine | null = null;
@@ -22,10 +21,10 @@ const draw = (canvas: HTMLCanvasElement, providedDraw: ProvidedDraw) => (mouse: 
 
     providedDraw(ctx, mouse);
 
-    drawInstructions();
+    const fps = Math.round(engine?.getFps() ?? 0);
 
     // if should draw fps
-    drawText(ctx, `${Math.round(engine?.getFps() ?? 0)} fps`, 5, 5, {
+    drawText(ctx, `${fps} fps`, 5, 5, {
         fontSize: 16,
     });
 };
@@ -52,7 +51,6 @@ export const createGame = (
         // spriteSheet = document.getElementById('sprite');
 
         // new Promise(loadImages).then(onLoad);
-
         engine = createEngine(canvas, update(providedUpdate), draw(canvas, providedDraw));
         engine.start();
     });

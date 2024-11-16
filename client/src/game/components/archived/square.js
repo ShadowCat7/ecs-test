@@ -1,5 +1,5 @@
-import { drawRectangle } from "../draw/drawRectangle.js";
-import { addDraw, DRAW_ORDER } from "../draw/orderedDraw.js";
+import { drawRectangle } from "../../draw/drawRectangle.js";
+import { addDraw, DRAW_ORDER } from "../../draw/orderedDraw.js";
 
 export const drawSquareComponent = (width) => {
     return {

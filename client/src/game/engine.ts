@@ -4,7 +4,7 @@ import { Mouse } from "./types.js";
 
 const EPSILON = 0.00000001;
 const TARGET_FPS = 60;
-const FPS_SMOOTHNESS = 0.9;
+const FPS_SMOOTHNESS = 0.90;
 const FPS_ONE_FRAME_WEIGHT = 1.0 - FPS_SMOOTHNESS;
 const MIN_FPS = 20;
 const MAX_SPF = 1 / MIN_FPS;
@@ -49,10 +49,11 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
         const draw = () => {
             let currentTime = new Date().getTime();
             let timeSinceLastDraw = (currentTime - previousDraw) / 1000;
-            let fps = 1 / timeSinceLastDraw;
+            let currentFps = 1 / timeSinceLastDraw;
             previousDraw = currentTime;
 
-            fps = fps * FPS_SMOOTHNESS + fps * FPS_ONE_FRAME_WEIGHT;
+            fps = fps * FPS_SMOOTHNESS + currentFps * FPS_ONE_FRAME_WEIGHT;
+            if (fps === Infinity) fps = 60;
 
             setTimeout(() => {
                 drawFunc(mouse);

@@ -1,0 +1,12 @@
+[
+    {
+        "type": "",
+        "components": [
+        ],
+        "prefabs": [
+            {
+                "type": "enemy"
+            }
+        ]
+    }
+]

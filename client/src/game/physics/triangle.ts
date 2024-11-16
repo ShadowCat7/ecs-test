@@ -1,0 +1,1 @@
+export const hypotenuse = (x: number, y: number) => Math.sqrt(x * x + y * y);

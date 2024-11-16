@@ -1,4 +1,4 @@
-import { addDraw, DRAW_ORDER } from "../draw/orderedDraw.js";
+import { addDraw, DRAW_ORDER } from "../../draw/orderedDraw.js";
 
 export const createSelectedComponent = () => {
     return {
