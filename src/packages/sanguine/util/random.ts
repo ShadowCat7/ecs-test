@@ -29,3 +29,12 @@ const nextInt = (max: number, rand: () => number) => {
 export const randomInt = (max: number) => nextInt(max, Math.random);
 
 export const seededInt = (max: number) => nextInt(max, getSeededRandom);
+
+export const shuffle = <T>(array: T[], getInt: (max: number) => number = randomInt) => {
+    for (let i = 0; i < array.length; i++) {
+        const index = getInt(array.length - i);
+        const value = array[index];
+        array[index] = array[i];
+        array[i] = value;
+    }
+}

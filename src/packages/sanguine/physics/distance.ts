@@ -1,5 +1,5 @@
-export const distance = (x1: number, y1: number, x2: number, y2: number) => pythagoras(x2 - x1, y2 - y1);
+import { hypotenuse } from "./triangle.js";
 
-export const midpoint = (x1: number, y1: number, x2: number, y2: number) => [x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2];
+export const distance = (x1: number, y1: number, x2: number, y2: number) => hypotenuse(x2 - x1, y2 - y1);
 
-const pythagoras = (a: number, b: number) => Math.sqrt(a * a + b * b);
+export const midpoint = (x1: number, y1: number, x2: number, y2: number): [number, number] => [x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2];

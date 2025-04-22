@@ -32,9 +32,10 @@ export type Entity = {
     y: number,
     visible: boolean,
     rotation: number,
+    scale: number,
     renders?: Render[],
     prefab?: Prefab,
-    getComponent: <T extends Component>(type: string) => T | undefined,
+    getComponent: <T extends Component>(type: T["type"]) => T | undefined,
     addComponent: (component: Component) => void,
 }
 

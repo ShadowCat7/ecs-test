@@ -1,69 +1,261 @@
 [
     {
-        "type": "card",
-        "components": [
-            {
-                "type": "cards/card"
-            }
-        ],
+        "type": "grid",
         "renders": [
             {
-                "type": "rectangle",
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "width": 100,
-                "height": 160,
-                "outline": 1,
-                "outlineColor": "#222222"
+                "type": "grid",
+                "x": -1000,
+                "y": -1000,
+                "z": -1,
+                "width": 2000,
+                "height": 2000
             }
         ]
     },
     {
-        "type": "enemy",
+        "type": "camera",
         "components": [
             {
-                "type": "enemy"
-            }
-        ]
-    },
-    {
-        "type": "stick",
-        "components": [
-            {
-                "type": "stick"
+                "type": "camera"
             },
             {
-                "type": "physics"
-            }
-        ],
-        "renders": [
-            {
-                "type": "rectangle",
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "width": 5,
-                "height": 50
+                "type": "physics",
+                "topSpeed": 3000,
+                "acceleration": 3000
             }
         ]
     },
     {
-        "type": "dialogue",
+        "type": "head",
         "components": [
             {
-                "type": "dialogue"
+                "type": "player"
+            },
+            {
+                "type": "physics",
+                "topSpeed": 300
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "eat"
+            },
+            {
+                "type": "size",
+                "isPlayer": true,
+                "size": 1
             }
         ],
         "renders": [
             {
-                "type": "rectangle",
+                "type": "circle",
                 "x": 0,
-                "y": 400,
+                "y": 0,
                 "z": 0,
-                "width": 5,
-                "height": 200,
-                "outline": 1
+                "radius": 12,
+                "color": "yellow"
+            }
+        ]
+    },
+    {
+        "type": "neck",
+        "components": [
+            {
+                "type": "physics",
+                "topSpeed": 300
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "damageable"
+            },
+            {
+                "type": "follow"
+            },
+            {
+                "type": "size",
+                "isPlayer": true,
+                "size": 1
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "yellow"
+            }
+        ]
+    },
+    {
+        "type": "tail",
+        "components": [
+            {
+                "type": "physics",
+                "topSpeed": 400
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "damageable"
+            },
+            {
+                "type": "follow"
+            },
+            {
+                "type": "edible"
+            },
+            {
+                "type": "size",
+                "isPlayer": true,
+                "size": 1
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "yellow"
+            }
+        ]
+    },
+    {
+        "type": "food",
+        "components": [
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "edible",
+                "food": 0.2
+            },
+            {
+                "type": "size",
+                "size": 1
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "blue"
+            }
+        ]
+    },
+    {
+        "type": "food2",
+        "components": [
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "edible",
+                "food": 0.2
+            },
+            {
+                "type": "size",
+                "size": 3
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "blue"
+            }
+        ]
+    },
+    {
+        "type": "prey",
+        "components": [
+            {
+                "type": "physics",
+                "topSpeed": 200,
+                "acceleration": 200
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "edible",
+                "food": 0.8
+            },
+            {
+                "type": "enemy",
+                "enemyType": "prey"
+            },
+            {
+                "type": "size",
+                "size": 4
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "green"
+            }
+        ]
+    },
+    {
+        "type": "predator",
+        "components": [
+            {
+                "type": "physics",
+                "topSpeed": 200,
+                "acceleration": 200
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "edible",
+                "food": 1
+            },
+            {
+                "type": "eat"
+            },
+            {
+                "type": "enemy",
+                "enemyType": "predator"
+            },
+            {
+                "type": "size",
+                "size": 10
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "red"
             }
         ]
     }

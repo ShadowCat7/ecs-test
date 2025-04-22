@@ -8,7 +8,7 @@ const prefabData: {
 } = {};
 
 const initPrefab = async (data: any, allData: any[]) => {
-    const { type, components, renders, prefabs } = data;
+    const { type, components = [], renders, prefabs } = data;
 
     if (prefabData[type]) return;
 
@@ -51,6 +51,10 @@ export const initializePrefabs = async (prefabLocations: string[]) => {
     for (let data of prefabDataList) {
         await initPrefab(data, prefabDataList);
     }
+}
+
+export const getPrefabs = () => {
+    return Object.values(prefabData);
 }
 
 export const getPrefab = (type: string) => {

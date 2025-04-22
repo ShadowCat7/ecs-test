@@ -22,7 +22,7 @@ const getComponents = (prefab: Prefab, components: Component[]) => {
     }
 }
 
-export const createEntity = (x: number, y: number, prefab?: Prefab, shapes?: Render[]) => {
+export const createEntity = (x: number, y: number, prefab?: Prefab, renders?: Render[]) => {
     const id = Math.random().toString().substring(2);
 
     const components: Component[] = [];
@@ -32,10 +32,11 @@ export const createEntity = (x: number, y: number, prefab?: Prefab, shapes?: Ren
         x,
         y,
         rotation: 0,
+        scale: 1,
         id,
         visible: true,
         components,
-        renders: shapes,
+        renders,
         prefab,
         getComponent: <T extends Component>(type: string) => componentsByType.get(type) as T | undefined,
         addComponent: (component: Component) => {

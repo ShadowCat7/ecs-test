@@ -17,10 +17,11 @@ const draw = (canvas: HTMLCanvasElement, providedDraw: ProvidedDraw) => (mouse: 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = false;
 
-    providedDraw(ctx, mouse);
+    providedDraw(ctx, mouse)
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
 
     const fps = Math.round(engine?.getFps() ?? 0);
-
     // if should draw fps
     drawText(ctx, `${fps} fps`, 5, 5, {
         fontSize: 16,

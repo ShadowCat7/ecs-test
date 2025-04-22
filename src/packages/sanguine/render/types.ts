@@ -1,4 +1,4 @@
-export type Render = Rectangle | Circle | Text;
+export type Render = Rectangle | Circle | Text | Grid;
 
 export type Default = {
     x: number,
@@ -26,4 +26,10 @@ export type Circle = Shape & {
 export type Text = Default & {
     type: 'text',
     text: string,
+}
+
+export type Grid = Shape & {
+    type: 'grid',
+    width: number,
+    height: number,
 }

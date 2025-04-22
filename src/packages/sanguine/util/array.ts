@@ -7,3 +7,20 @@ export const repeat = (count: number, func: () => void) => {
         func();
     }
 }
+
+export const groupMap = <T extends {}>(array: T[], getKey: (element: T) => string) => {
+    const map = new Map<string, T[]>();
+
+    for (let element of array) {
+        const key = getKey(element);
+        const group = map.get(key);
+
+        if (!group) {
+            map.set(key, [element]);
+        } else {
+            group.push(element);
+        }
+    }
+
+    return map;
+}

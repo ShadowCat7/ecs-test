@@ -3,8 +3,11 @@ import { drawText } from "../draw/drawText.js";
 import { addRender } from "./renderQueue.js";
 import { getCamera } from "../entities/entities.js";
 import { Entity } from "../types.js";
-import { Circle, Rectangle, Render, Text } from "./types.js";
+import { Circle, Grid, Rectangle, Render, Text } from "./types.js";
 import { assertUnreachable } from "../util/exhaustiveSwitch.js";
+import { drawCircle } from "../draw/drawCircle.js";
+import { drawGrid } from "../draw/drawGrid.js";
+import { CameraComponent } from "../../castle/components/cameraComponent.js";
 
 const getRenderFunc = (renderItem: Render, entity: Entity) => {
     const { type } = renderItem;
@@ -16,10 +19,29 @@ const getRenderFunc = (renderItem: Render, entity: Entity) => {
             return renderCircle(renderItem, entity);
         case "text":
             return renderText(renderItem, entity);
+        case "grid":
+            return renderGrid(renderItem, entity);
         default:
             assertUnreachable(type);
             return () => { };
     }
+}
+
+let camera: Entity | null = null;
+
+export const setupRender = (ctx: CanvasRenderingContext2D) => {
+    camera = getCamera();
+    if (!camera) throw new Error('No active camera');
+    const cameraData = camera.getComponent<CameraComponent>('camera');
+    if (!cameraData) throw new Error('No active camera');
+
+    const scale = 1 / cameraData.zoom;
+    ctx.scale(scale, scale);
+
+    const drawX = -camera.x + ctx.canvas.width * cameraData.zoom / 2;
+    const drawY = -camera.y + ctx.canvas.height * cameraData.zoom / 2;
+
+    ctx.translate(drawX, drawY);
 }
 
 export const render = (renderItem: Render, entity: Entity) => {
@@ -28,22 +50,20 @@ export const render = (renderItem: Render, entity: Entity) => {
     addRender(renderItem.z, renderFunc);
 }
 
-const setup = (renderItem: Render, entity: Entity) => {
-    const camera = getCamera();
-
-    const x = entity.x + renderItem.x - camera.x;
-    const y = entity.y + renderItem.y - camera.y;
+const getCameraRelatedPosition = (renderItem: Render, entity: Entity, canvasWidth: number, canvasHeight: number) => {
+    const x = entity.x + renderItem.x;
+    const y = entity.y + renderItem.y;
 
     return [x, y];
 }
 
 export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
     const { width, height, outline, outlineColor } = renderItem;
-    const [x, y] = setup(renderItem, entity);
+    const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     ctx.translate(x + width / 2, y + height / 2);
     ctx.rotate(entity.rotation);
-    ctx.translate(-x - width / 2, -y - height /2);
+    ctx.translate(-x - width / 2, -y - height / 2);
 
     drawRectangle(ctx, x, y, width, height, 'white');
     if (outline) {
@@ -54,17 +74,24 @@ export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: 
 }
 
 export const renderCircle = (renderItem: Circle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { radius } = renderItem;
-    const [x, y] = setup(renderItem, entity);
+    const { radius, color } = renderItem;
+    const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
-    // drawCircle(ctx, x, y, radius, 'white');
+    drawCircle(ctx, x, y, radius, color, entity.scale);
 }
 
 export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
     const { text } = renderItem;
-    const [x, y] = setup(renderItem, entity);
+    const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     drawText(ctx, text, x, y, {
         textColor: 'black'
     });
+}
+
+export const renderGrid = (renderItem: Grid, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
+    const { width, height } = renderItem;
+    const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
+
+    drawGrid(ctx, x, y, width, height, 30);
 }

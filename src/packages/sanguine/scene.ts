@@ -1,8 +1,10 @@
-import { getEntityList, setCamera, addEntities, addEntity, getComponents } from "./entities/entities.js";
-import { createEntity } from "./entities/entity.js";
-import { render } from "./render/render.js";
+import { drawGrid } from "./draw/drawGrid.js";
+import { getEntityList, addEntities, addEntity, getComponents, getCamera } from "./entities/entities.js";
+import { addSubscriber, sendMail } from "./entities/mailbox.js";
+import { render, setupRender } from "./render/render.js";
 import { flushRenderQueue } from "./render/renderQueue.js";
-import { Prefab, Entity, System } from "./types.js";
+import { timerSystem } from "./systems/timerSystem.js";
+import { Prefab, Entity, System, Mailbox, Message } from "./types.js";
 
 const renderPrefab = (prefab: Prefab, entity: Entity) => {
     if (prefab.shapes?.length) {
@@ -20,17 +22,31 @@ const renderPrefab = (prefab: Prefab, entity: Entity) => {
 
 export type Scene = ReturnType<typeof createScene>;
 
-export const createScene = (initialEntities: Entity[], systems: System[]) => {
+export const createScene = (initialEntities: Entity[], ...systemCreators: ((messager: (message: Message) => void) => System)[]) => {
+    let mailbox: Mailbox = {};
+
+    const messageSender = (message: Message) => sendMail(message, mailbox);
+
+    const systems = [
+        timerSystem,
+        ...systemCreators
+    ].map(x => x(messageSender));
+
+    for (let system of systems) {
+        if (!system.triggers?.length) continue;
+
+        for (let trigger of system.triggers)
+            addSubscriber(mailbox, trigger.messageType, trigger.handler);
+    }
+
     const entities = getEntityList();
 
-    const camera = createEntity(0, 0);
-    setCamera(camera);
-
     addEntities(initialEntities);
-    addEntity(camera);
 
     return {
         draw: (ctx: CanvasRenderingContext2D) => {
+            setupRender(ctx);
+
             for (const entity of entities) {
                 if (!entity.visible) continue;
 
@@ -50,9 +66,7 @@ export const createScene = (initialEntities: Entity[], systems: System[]) => {
         update: (elapsedTime: number) => {
             for (const system of systems) {
                 const components = getComponents(system.componentType);
-                if (!components?.length) continue;
-
-                system.process(components, elapsedTime);
+                system.process(components ?? [], elapsedTime);
             }
         },
         getEntities: () => entities,
