@@ -4,16 +4,17 @@ problems:
     on animation end, fire event
 
 features:
-    friction
-    increase grid by player scale
-    what happens when tail is eaten
-    what happens when head collides with larger entity
+    move bouncing to general location
     enemy spawns
     reset scale and size on new level
 
+think about:
+    size scaling after food gets small enough
+    tail growth
+
 fixes:
     sometimes predators don't move
-    allow zoom in
+        sometimes they don't eat food they're on top of
     fix moving too fast for new tail segments at first
 
 game feel:

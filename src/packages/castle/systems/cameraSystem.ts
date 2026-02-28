@@ -1,15 +1,14 @@
 import { addEntity, getCamera, getComponents, getEntity } from "../../sanguine/entities/entities.js";
 import { createEntity } from "../../sanguine/entities/entity.js";
+import { hypotenuse } from "../../sanguine/physics/triangle.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
+import { getScreenSize } from "../../sanguine/screen.js";
 import { Component, Entity, Message, System } from "../../sanguine/types.js";
 import { setMagnitude } from "../../sanguine/util/vector.js";
 import { CameraComponent } from "../components/cameraComponent.js";
 import { PhysicsComponent } from "../components/physicsComponent.js";
 import { PlayerComponent } from "../components/playerComponent.js";
 import { ZoomMessage } from "./gameplaySystems/types.js";
-
-// TODO get from screen size
-const xOffset = 800 / 600;
 
 export const cameraSystem = (
     messager: (message: Message) => void,
@@ -44,6 +43,9 @@ export const cameraSystem = (
             const playerPhysics = player.getComponent<PhysicsComponent>('physics');
             if (!playerPhysics) return;
 
+            const [screenWidth, screenHeight] = getScreenSize();
+            const xOffset = screenWidth / screenHeight;
+
             for (const component of components as CameraComponent[]) {
                 if (!component.active) continue;
                 const entity = getEntity(component.entityId);
@@ -54,9 +56,18 @@ export const cameraSystem = (
 
                 entity.scale = player.scale;
 
-                const [velocityX, velocityY] = setMagnitude(playerPhysics.velocityX, playerPhysics.velocityY, 70 * player.scale);
-                physics.moveToX = player.x + velocityX * xOffset;
-                physics.moveToY = player.y + velocityY;
+                let newCameraX = player.x;
+                let newCameraY = player.y;
+                const playerSpeed = hypotenuse(playerPhysics.velocityX, playerPhysics.velocityY);
+
+                if (playerSpeed > playerPhysics.topSpeed * player.scale + 1) {
+                    newCameraX = entity.x;
+                    newCameraY = entity.y;
+                }
+
+                const [cammeraOffsetX, cammeraOffsetY] = setMagnitude(playerPhysics.velocityX, playerPhysics.velocityY, 70 * player.scale);
+                physics.moveToX = newCameraX + cammeraOffsetX * xOffset;
+                physics.moveToY = newCameraY + cammeraOffsetY;
             }
         }
     };

@@ -3,6 +3,7 @@ import { drawText } from './draw/drawText.js';
 import { Engine, createEngine } from './engine.js';
 import { setComponentsDirectory } from './prefabs/componentMapper.js';
 import { initializePrefabs } from './prefabs/prefabs.js';
+import { getScreenSize, setScreenToWindow } from './screen.js';
 import { Mouse } from './types.js';
 
 let engine: Engine | null = null;
@@ -10,8 +11,18 @@ let engine: Engine | null = null;
 export type ProvidedDraw = (ctx: CanvasRenderingContext2D, mouse: Mouse) => void;
 
 const draw = (canvas: HTMLCanvasElement, providedDraw: ProvidedDraw) => (mouse: Mouse) => {
+    const [screenWidth, screenHeight] = getScreenSize();
+
+    setScreenToWindow();
+    if (canvas.width !== screenWidth || canvas.height !== screenHeight) {
+        canvas.width = screenWidth;
+        canvas.height = screenHeight;
+    }
+
     let ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);

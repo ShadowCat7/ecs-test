@@ -45,7 +45,7 @@ const initPrefab = async (data: any, allData: any[]) => {
 }
 
 export const initializePrefabs = async (prefabLocations: string[]) => {
-    const prefabResponses = await Promise.all(prefabLocations.map(x => fetch('../../' + getValidDirectory(x))));
+    const prefabResponses = await Promise.all(prefabLocations.map(x => fetch(getValidDirectory(x))));
     const prefabDataList = (await Promise.all(prefabResponses.map(x => x.json()))).flat();
 
     for (let data of prefabDataList) {

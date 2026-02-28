@@ -20,8 +20,7 @@
             },
             {
                 "type": "physics",
-                "topSpeed": 3000,
-                "acceleration": 3000
+                "topSpeed": 500
             }
         ]
     },
@@ -64,7 +63,7 @@
         "components": [
             {
                 "type": "physics",
-                "topSpeed": 300
+                "topSpeed": 400
             },
             {
                 "type": "collideable",
@@ -226,7 +225,8 @@
             {
                 "type": "physics",
                 "topSpeed": 200,
-                "acceleration": 200
+                "acceleration": 200,
+                "friction": 90
             },
             {
                 "type": "collideable",

@@ -20,7 +20,7 @@ export const startup = async (canvas: HTMLCanvasElement) => {
     }
 
     const prefabLocations = [
-        'data/generalPrefabs.json',
+        './data/generalPrefabs.json',
     ];
 
     await createGame(canvas, prefabLocations, 'castle/components', update, draw);

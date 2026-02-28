@@ -46,8 +46,7 @@ export const createEntity = (x: number, y: number, prefab?: Prefab, renders?: Re
         },
     };
 
-    if (prefab)
-        getComponents(prefab, components);
+    if (prefab) getComponents(prefab, components);
 
     for (let component of components) {
         component.entityId = id;

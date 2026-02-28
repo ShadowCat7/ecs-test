@@ -1,9 +1,7 @@
-import { getComponents, getEntity, removeEntity } from "../../../sanguine/entities/entities.js";
+import { getComponents, getEntity } from "../../../sanguine/entities/entities.js";
 import { Component, Message, System } from "../../../sanguine/types.js";
-import { CollideableComponent } from "../../components/collideableComponent.js";
-import { PlayerComponent } from "../../components/playerComponent.js";
 import { SizeComponent } from "../../components/sizeComponent.js";
-import { LevelUpMessage } from "./types.js";
+import { LevelDownMessage, LevelUpMessage } from "./types.js";
 
 const setSizes = (currentLevel: number) => {
     const components = getComponents<SizeComponent>('size');
@@ -51,10 +49,16 @@ export const sizeSystem = (
         triggers: [{
             messageType: 'levelUp',
             handler: (message: Message) => {
-                if (message.type === 'levelUp') {
-                    const { level } = message as LevelUpMessage;
-                    currentLevel = level;
-                }
+                if (message.type !== 'levelUp') return;
+                const { level } = message as LevelUpMessage;
+                currentLevel = level;
+            }
+        }, {
+            messageType: 'levelDown',
+            handler: (message: Message) => {
+                if (message.type !== 'levelDown') return;
+                const { level } = message as LevelDownMessage;
+                currentLevel = level;
             }
         }],
         componentType: 'size',
@@ -70,9 +74,13 @@ export const sizeSystem = (
                     continue;
                 }
 
-                if (entity.scale !== scale) {
+                if (entity.scale < scale) {
                     component.scaleSpeed = Math.min((component.scaleSpeed ?? 0) + 20 * elapsedTime, 10);
                     entity.scale = Math.min(entity.scale + component.scaleSpeed * elapsedTime, scale);
+                    component.size = (entity.scale - 1) * 10;
+                } else if (entity.scale > scale) {
+                    component.scaleSpeed = Math.min((component.scaleSpeed ?? 0) + 20 * elapsedTime, 10);
+                    entity.scale = Math.max(entity.scale - component.scaleSpeed * elapsedTime, scale);
                     component.size = (entity.scale - 1) * 10;
                 } else {
                     component.scaleSpeed = 0;

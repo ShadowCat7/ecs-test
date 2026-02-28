@@ -20,7 +20,7 @@ export const addComponent = (component: Component) => {
 export const addEntity = (entity: Entity) => {
     entities.push(entity);
     entitiesById.set(entity.id, entity);
-    // quadtree.addNode(entity);
+    quadtree.addNode(entity);
     for (const component of entity.components) {
         addComponent(component);
     }
@@ -29,6 +29,9 @@ export const addEntity = (entity: Entity) => {
 export const getEntityList = () => entities;
 
 export const getEntityQuadtree = () => quadtree;
+export const recreateQuadTree = () => {
+    quadtree = createQuadtree(entities);
+}
 
 export const getEntity = (id: string) => entitiesById.get(id)!;
 
@@ -36,7 +39,7 @@ export const getCamera = () => {
     const cameras = componentMap.get('camera');
     if (!cameras) throw new Error('No active camera');
 
-    const camera = (cameras as CameraComponent[]);//.filter(x => x.active);
+    const camera = (cameras as CameraComponent[]).filter(x => x.active);
 
     if (camera.length !== 1) throw new Error('Too many active cameras')
 

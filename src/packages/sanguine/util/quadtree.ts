@@ -25,7 +25,7 @@ export const createQuadtree = <T extends Coordinate>(data: T[]) => {
     minY -= 10;
     maxY += 10;
 
-    let tree = createNodes([minX, minY], [maxX, maxY], data);
+    let tree = createNodes([minX, minY], [maxX, maxY], [...data]);
 
     const addNode = (item: T) => {
         tree = zoomOut(tree, item);
@@ -36,6 +36,7 @@ export const createQuadtree = <T extends Coordinate>(data: T[]) => {
         nearest: (x: number, y: number, width: number) => nearest(tree, x, y, width),
         addNode,
         removeItem: (item: T) => removeItem(tree, item),
+        getTree: () => tree,
     }
 }
 
@@ -66,7 +67,6 @@ const removeItem = <T extends Coordinate>(node: Node<T>, item: T) => {
 }
 
 const zoomOut = <T extends Coordinate>(node: Node<T>, item: T): Node<T> => {
-    debugger
     const { mid, max, data } = node;
     const [midX, midY] = mid;
     const [maxX, maxY] = max;
@@ -75,7 +75,7 @@ const zoomOut = <T extends Coordinate>(node: Node<T>, item: T): Node<T> => {
 
     const { x, y } = item;
 
-    if (x >= minX && x < maxX && y >= minY && y < minY) {
+    if (x >= minX && x < maxX && y >= minY && y < maxY) {
         addItemToNode(node, item);
         return node;
     }
@@ -88,42 +88,56 @@ const zoomOut = <T extends Coordinate>(node: Node<T>, item: T): Node<T> => {
     let yIndex = 0;
 
     if (x < minX) {
-        newMin = [minX - (maxX - minX), minY];
-        newMid = min;
+        newMin[0] = minX - (maxX - minX);
+        newMid[0] = minX;
     } else {
-        newMid = max;
-        newMax = [maxX + maxX - minX, maxY];
+        newMid[0] = maxX;
+        newMax[0] = maxX + maxX - minX;
         xIndex = 1;
     }
 
     if (y < minY) {
-        newMin = [newMin[0], minY - (maxY - minY)];
-        newMid = [newMid[0], minY];
+        newMin[1] = minY - (maxY - minY);
+        newMid[1] = minY;
     } else {
-        newMid = [newMax[0], maxY];
-        newMax = [newMax[0], maxY + maxY - minY];
+        newMid[1] = maxY;
+        newMax[1] = maxY + maxY - minY;
         yIndex = 1;
     }
 
-    const nodes: [[Node<T>, Node<T>], [Node<T>, Node<T>]] = [[{
-        mid: [NaN, NaN],
-        max: [NaN, NaN],
-        data: [],
-    }, {
-        mid: [NaN, NaN],
-        max: [NaN, NaN],
-        data: [],
-    }], [{
-        mid: [NaN, NaN],
-        max: [NaN, NaN],
-        data: [],
-    }, {
-        mid: [NaN, NaN],
-        max: [NaN, NaN],
-        data: [],
-    }]];
+    const [newMinX, newMinY] = newMin;
+    const [newMidX, newMidY] = newMid;
+    const [newMaxX, newMaxY] = newMax;
 
-    nodes[xIndex][yIndex] = node;
+    const nodes: [[Node<T>, Node<T>], [Node<T>, Node<T>]] = [[
+        {
+            mid: midpoint(newMinX, newMinY, newMidX, newMidY),
+            max: newMid,
+            data: [],
+        },
+        {
+            mid: midpoint(newMinX, newMidY, newMidX, newMaxY),
+            max: [newMidX, newMaxY],
+            data: [],
+        }
+    ], [
+        {
+            mid: midpoint(newMidX, newMinY, newMaxX, newMidY),
+            max: [newMaxX, newMidY],
+            data: [],
+        },
+        {
+            mid: midpoint(newMidX, newMidY, newMaxX, newMaxY),
+            max: newMax,
+            data: [],
+        }
+    ]];
+
+    nodes[xIndex][yIndex] = {
+        ...nodes[xIndex][yIndex],
+        nodes: node.nodes,
+        data: node.data,
+    };
 
     const newNode: Node<T> = {
         mid: newMid,
@@ -149,7 +163,6 @@ const addItemToNode = <T extends Coordinate>(node: Node<T>, item: T) => {
     addItemToNode(nodes[xIndex][yIndex], item);
 }
 
-
 const search = <T extends Coordinate>(node: Node<T>, x: number, y: number, width: number): T[] => {
     const { nodes, data, mid: [midX, midY], max: [maxX] } = node;
     if (!nodes) return data;
@@ -165,10 +178,10 @@ const nearest = <T extends Coordinate>(node: Node<T>, x: number, y: number, widt
     const { nodes, data, mid: [midX, midY], max: [maxX, maxY] } = node;
     if (!nodes) return data;
 
-    const minSearchX = x - width;
-    const minSearchY = y - width;
-    const maxSearchX = x + width;
-    const maxSearchY = y + width;
+    const minSearchX = x - width / 2;
+    const minSearchY = y - width / 2;
+    const maxSearchX = x + width / 2;
+    const maxSearchY = y + width / 2;
 
     const nodeWidth = 2 * (maxX - midX);
     const minX = maxX - nodeWidth;
@@ -180,8 +193,7 @@ const nearest = <T extends Coordinate>(node: Node<T>, x: number, y: number, widt
         && maxY < maxSearchY
     ) return data;
 
-    const searchWidth = width * 2;
-    if (areRectanglesIntersecting(minSearchX, minSearchY, searchWidth, searchWidth, minX, minY, nodeWidth, nodeWidth)) {
+    if (areRectanglesIntersecting(minSearchX, minSearchY, width, width, minX, minY, nodeWidth, nodeWidth)) {
         return [
             ...nearest(nodes[0][0], x, y, width),
             ...nearest(nodes[1][0], x, y, width),
@@ -193,24 +205,25 @@ const nearest = <T extends Coordinate>(node: Node<T>, x: number, y: number, widt
 }
 
 const createNodes = <T extends Coordinate>(min: [number, number], max: [number, number], data: T[]): Node<T> => {
-    if (data.length <= 1) {
-        return {
-            mid: [NaN, NaN],
-            max: [NaN, NaN],
-            data: [],
-        };
-    }
-    if (!data.some(d => data[0].x !== d.x || data[0].y !== d.y)) {
-        return {
-            mid: [NaN, NaN],
-            max: [NaN, NaN],
-            data,
-        };
-    }
     const [minX, minY] = min;
     const [maxX, maxY] = max;
     const mid = midpoint(minX, minY, maxX, maxY);
     const [midX, midY] = mid;
+
+    if (data.length <= 1) {
+        return {
+            mid,
+            max,
+            data: [...data],
+        };
+    }
+    if (!data.some(d => data[0].x !== d.x || data[0].y !== d.y)) {
+        return {
+            mid,
+            max,
+            data: [...data],
+        };
+    }
 
     const setupData: [[T[], T[]], [T[], T[]]] = [
         [[], []],
@@ -229,8 +242,8 @@ const createNodes = <T extends Coordinate>(min: [number, number], max: [number, 
         max,
         data,
         nodes: [
-            [createNodes(min, mid, setupData[0][0]), createNodes([midX, minY], [maxX, midY], setupData[1][0])],
-            [createNodes([minX, midY], [midX, maxY], setupData[0][1]), createNodes(mid, max, setupData[1][1])]
+            [createNodes(min, mid, setupData[0][0]), createNodes([minX, midY], [midX, maxY], setupData[0][1])],
+            [createNodes([midX, minY], [maxX, midY], setupData[1][0]), createNodes(mid, max, setupData[1][1])]
         ]
     };
 }
