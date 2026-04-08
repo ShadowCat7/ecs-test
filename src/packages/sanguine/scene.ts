@@ -65,6 +65,7 @@ export const createScene = (initialEntities: Entity[], ...systemCreators: ((mess
         },
         update: (elapsedTime: number) => {
             for (const system of systems) {
+                if (system.componentType == null) continue;
                 const components = getComponents(system.componentType);
                 system.process(components ?? [], elapsedTime);
             }

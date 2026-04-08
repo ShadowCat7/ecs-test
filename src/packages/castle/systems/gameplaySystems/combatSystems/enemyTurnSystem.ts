@@ -1,6 +1,5 @@
 import { getComponents, getEntity } from "../../../../sanguine/entities/entities.js";
-import { TimerMessage } from "../../../../sanguine/messages.js";
-import { Component, Message, System } from "../../../../sanguine/types.js";
+import { Component, Message, System, TimerMessage } from "../../../../sanguine/types.js";
 import { randomInt } from "../../../../sanguine/util/random.js";
 import { EnemyComponent } from "../../../components/enemyComponent.js";
 

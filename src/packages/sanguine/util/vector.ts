@@ -56,5 +56,5 @@ export const reduceMagnitude = (x: number, y: number, reduction: number, max?: n
     const currentMagnitude = hypotenuse(x, y);
     let newMagnitude = currentMagnitude - reduction;
     if (max !== undefined && newMagnitude < max) newMagnitude = max;
-    return setMagnitude(x, y, currentMagnitude);
+    return setMagnitude(x, y, newMagnitude);
 }

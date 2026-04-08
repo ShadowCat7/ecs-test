@@ -1,3 +1,12 @@
+murk:
+grid item component
+check grid before moving to see if something is there
+
+
+
+
+
+castle:
 problems:
     only handle messages for certain component types?
     variable text

@@ -1,5 +1,4 @@
-import { Component, Message, System } from "../../sanguine/types.js";
-import { TimerMessage } from "../messages.js";
+import { Component, Message, TimerMessage, System } from "../../sanguine/types.js";
 
 type Timer = undefined | TimerMessage & { elapsed: number }
 

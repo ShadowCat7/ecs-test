@@ -6,7 +6,7 @@
                 "type": "grid",
                 "x": -1000,
                 "y": -1000,
-                "z": 0,
+                "z": -1,
                 "width": 2000,
                 "height": 2000
             }
@@ -32,7 +32,7 @@
             },
             {
                 "type": "physics",
-                "topSpeed": 200
+                "topSpeed": 300
             },
             {
                 "type": "collideable",
@@ -52,9 +52,134 @@
                 "type": "circle",
                 "x": 0,
                 "y": 0,
-                "z": 1,
+                "z": 0,
                 "radius": 12,
                 "color": "yellow"
+            }
+        ]
+    },
+    {
+        "type": "neck",
+        "components": [
+            {
+                "type": "physics",
+                "topSpeed": 400
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "damageable"
+            },
+            {
+                "type": "follow"
+            },
+            {
+                "type": "size",
+                "isPlayer": true,
+                "size": 1
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "yellow"
+            }
+        ]
+    },
+    {
+        "type": "tail",
+        "components": [
+            {
+                "type": "physics",
+                "topSpeed": 400
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "damageable"
+            },
+            {
+                "type": "follow"
+            },
+            {
+                "type": "edible"
+            },
+            {
+                "type": "size",
+                "isPlayer": true,
+                "size": 1
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "yellow"
+            }
+        ]
+    },
+    {
+        "type": "food",
+        "components": [
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "edible",
+                "food": 0.2
+            },
+            {
+                "type": "size",
+                "size": 1
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "blue"
+            }
+        ]
+    },
+    {
+        "type": "food2",
+        "components": [
+            {
+                "type": "collideable",
+                "radius": 12
+            },
+            {
+                "type": "edible",
+                "food": 0.2
+            },
+            {
+                "type": "size",
+                "size": 3
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "radius": 12,
+                "color": "blue"
             }
         ]
     },

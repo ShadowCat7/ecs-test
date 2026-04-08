@@ -1,4 +1,4 @@
-import { startup } from "./packages/castle/startup.js";
+import { startup } from "./packages/murk/startup.js";
 
 (async () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;

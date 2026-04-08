@@ -39,22 +39,6 @@ export type Entity = {
     addComponent: (component: Component) => void,
 }
 
-export type Message = {
-    type: string,
-}
-
-export type System = {
-    componentType: string,
-    messageType?: string,
-    triggers?: Trigger[],
-    process: (components: Component[], elapsedTime: number) => void,
-}
-
-export type Trigger = {
-    messageType: string,
-    handler: (message: Message) => void,
-}
-
 export type Prefab = {
     type: string,
     components: (() => Component)[],
@@ -62,4 +46,25 @@ export type Prefab = {
     prefabs?: Prefab[],
     script?: (entity: Entity) => void,
     createEntity: (x: number, y: number) => Entity,
+}
+
+export type System = {
+    componentType: string | null,
+    triggers?: Trigger[],
+    process: (components: Component[], elapsedTime: number) => void,
+}
+
+export interface Trigger {
+    messageType: string,
+    handler: (message: Message) => void,
+}
+
+export interface Message {
+    type: string,
+}
+
+export type TimerMessage = {
+    type: 'timer',
+    duration: number,
+    responseType: string,
 }

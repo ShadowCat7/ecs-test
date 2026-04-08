@@ -7,9 +7,7 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, x: number, y: number, wi
     while (lineX <= width) {
         const newX = x + lineX;
 
-        if (newX >= 0) {
-            drawLine(ctx, newX, y, newX, y + height, color);
-        }
+        drawLine(ctx, newX, y, newX, y + height, color);
 
         lineX += gridSize;
     }
@@ -17,9 +15,7 @@ export const drawGrid = (ctx: CanvasRenderingContext2D, x: number, y: number, wi
     while (lineY <= width) {
         const newY = y + lineY;
 
-        if (newY >= 0) {
-            drawLine(ctx, x, newY, x + width, newY, color);
-        }
+        drawLine(ctx, x, newY, x + width, newY, color);
 
         lineY += gridSize;
     }
