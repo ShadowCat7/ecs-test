@@ -37,14 +37,6 @@
             {
                 "type": "collideable",
                 "radius": 12
-            },
-            {
-                "type": "eat"
-            },
-            {
-                "type": "size",
-                "isPlayer": true,
-                "size": 1
             }
         ],
         "renders": [
@@ -55,82 +47,6 @@
                 "z": 1,
                 "radius": 12,
                 "color": "yellow"
-            }
-        ]
-    },
-    {
-        "type": "prey",
-        "components": [
-            {
-                "type": "physics",
-                "topSpeed": 200,
-                "acceleration": 200
-            },
-            {
-                "type": "collideable",
-                "radius": 12
-            },
-            {
-                "type": "edible",
-                "food": 0.8
-            },
-            {
-                "type": "enemy",
-                "enemyType": "prey"
-            },
-            {
-                "type": "size",
-                "size": 4
-            }
-        ],
-        "renders": [
-            {
-                "type": "circle",
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "radius": 12,
-                "color": "green"
-            }
-        ]
-    },
-    {
-        "type": "predator",
-        "components": [
-            {
-                "type": "physics",
-                "topSpeed": 200,
-                "acceleration": 200,
-                "friction": 90
-            },
-            {
-                "type": "collideable",
-                "radius": 12
-            },
-            {
-                "type": "edible",
-                "food": 1
-            },
-            {
-                "type": "eat"
-            },
-            {
-                "type": "enemy",
-                "enemyType": "predator"
-            },
-            {
-                "type": "size",
-                "size": 10
-            }
-        ],
-        "renders": [
-            {
-                "type": "circle",
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "radius": 12,
-                "color": "red"
             }
         ]
     }

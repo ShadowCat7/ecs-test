@@ -1,3 +1,4 @@
+import { loadInk } from "../ink/ink.js";
 import { drawGrid } from "../sanguine/draw/drawGrid.js";
 import { createGame } from "../sanguine/game.js";
 import { getCurrentScene } from "../sanguine/sceneManager.js";
@@ -15,7 +16,7 @@ export const startup = async (canvas: HTMLCanvasElement) => {
 
     const update = (elapsedTime: number) => {
         getCurrentScene()?.update(elapsedTime);
-    }
+    };
 
     const prefabLocations = [
         './data/generalPrefabs.json',
@@ -23,5 +24,9 @@ export const startup = async (canvas: HTMLCanvasElement) => {
 
     await createGame(canvas, prefabLocations, 'murk/components', update, draw);
 
+    console.log('hmm')
+    const story = await loadInk('./data/example.ink');
+    console.log(story.Continue())
+
     changeSceneType('test');
-}
+};
