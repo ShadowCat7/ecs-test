@@ -1,1 +1,0 @@
-declare global { interface Window { inkjs: any; } }

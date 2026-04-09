@@ -1,5 +1,7 @@
 import { getValidDirectory } from '../sanguine/util/directory.js';
 
+declare global { interface Window { inkjs: any; } }
+
 const eachEntry = <T>(obj: Record<string, T> | undefined, action: (key: string, value: T) => void) => {
     if (obj === undefined) return;
     for (const [key, value] of Object.entries(obj))

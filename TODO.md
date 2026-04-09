@@ -2,9 +2,7 @@ murk:
 grid item component
 check grid before moving to see if something is there
 
-
-
-
+infra: remove scripts folder from tsc compile
 
 castle:
 problems:

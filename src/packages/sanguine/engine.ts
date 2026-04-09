@@ -14,8 +14,8 @@ export type DrawFunc = (mouse: Mouse) => void;
 
 export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, drawFunc: DrawFunc) => {
     let animationFrameId: number = 0;
-    let timeoutId: number = 0;
-    const buttonsPressed: { [key: string]: boolean } = {};
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const buttonsPressed: { [key: string]: boolean; } = {};
     const keysPressedLabel = document.getElementById('keypressed');
     const mouse = {
         x: 0,
@@ -44,7 +44,7 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
             }, 0);
 
             animationFrameId = (requestAnimationFrame as any)(draw, canvas);
-        }
+        };
 
         const draw = () => {
             let currentTime = new Date().getTime();
@@ -60,10 +60,10 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
             }, 0);
 
             timeoutId = setTimeout(update, 0);
-        }
+        };
 
         update();
-    }
+    };
 
     const start = () => {
         mainLoop();
@@ -152,6 +152,6 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
         start,
         stop,
     };
-}
+};
 
 export type Engine = ReturnType<typeof createEngine>;
