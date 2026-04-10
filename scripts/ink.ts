@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import { Compiler } from 'inkjs/compiler/Compiler';
+import readFileSync from './readFileSync.ts';
 
 const INK_DIR = './src/inks/';
 const JSON_DIR = './src/data/inks/';
@@ -54,14 +55,36 @@ const exists = async (filename: string) => {
 const convert = async (filename: string) => {
     const fullFilename = `${INK_DIR}${filename}`;
     const contents = await fs.readFile(fullFilename, ENCODING);
-    const json = compile(contents);
+    const json = compile(contents, filename);
     if (!json) return;
     const newFilename = filename.split('.')[0] + '.json';
     await fs.writeFile(`${JSON_DIR}${newFilename}`, json, { ...ENCODING });
 };
 
-const compile = (filename: string): string | void => {
-    const compiler = new Compiler(filename);
+const fileHandler = {
+    ResolveInkFilename: (filename: string, sourceFilename?: string | null) => {
+        console.log('resolve');
+        console.log(filename);
+        console.log(sourceFilename);
+        return filename;
+    },
+    LoadInkFileContents: (filename: string, sourceFilename?: string | null) => {
+        const fullFilename = `${INK_DIR}${filename}`;
+        const contents = readFileSync(fullFilename, ENCODING);
+        return contents;
+    }
+};
+
+const compile = (fileContents: string, filename: string): string | void => {
+    const compiler = new Compiler(fileContents, {
+        fileHandler,
+        errorHandler: (message, errorType) => {
+            console.error(`Ink compile error: ${errorType}: ${message}`);
+        },
+        sourceFilename: filename,
+        pluginNames: [],
+        countAllVisits: false,
+    });
     try {
         return compiler.Compile().ToJson();
     } catch (e) {

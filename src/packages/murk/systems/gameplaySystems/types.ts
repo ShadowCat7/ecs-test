@@ -40,3 +40,8 @@ export type ZoomMessage = Message & {
     type: 'zoom',
     amount: number,
 }
+
+export type StoryStartMessage = Message & {
+    type: 'storyStart',
+    name: string,
+};

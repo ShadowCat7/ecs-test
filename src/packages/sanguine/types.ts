@@ -3,19 +3,19 @@ import { Render } from "./render/types.js";
 export type ControlHistoryItem = {
     previous: boolean,
     current: boolean,
-}
+};
 
 export type Mouse = {
     x: number,
     y: number,
     leftClick: boolean,
     rightClick: boolean,
-}
+};
 
 export type Component = {
     type: string,
     entityId: string,
-}
+};
 
 export type StateComponent<D, S> = Component & D & S;
 
@@ -23,7 +23,7 @@ export type Subscriber = (message: Message) => void;
 
 export type Mailbox = {
     [messageType: string]: Subscriber[],
-}
+};
 
 export type Entity = {
     id: string,
@@ -37,7 +37,7 @@ export type Entity = {
     prefab?: Prefab,
     getComponent: <T extends Component>(type: T["type"]) => T | undefined,
     addComponent: (component: Component) => void,
-}
+};
 
 export type Prefab = {
     type: string,
@@ -46,13 +46,13 @@ export type Prefab = {
     prefabs?: Prefab[],
     script?: (entity: Entity) => void,
     createEntity: (x: number, y: number) => Entity,
-}
+};
 
 export type System = {
     componentType: string | null,
     triggers?: Trigger[],
     process: (components: Component[], elapsedTime: number) => void,
-}
+};
 
 export interface Trigger {
     messageType: string,
@@ -67,4 +67,4 @@ export type TimerMessage = {
     type: 'timer',
     duration: number,
     responseType: string,
-}
+};

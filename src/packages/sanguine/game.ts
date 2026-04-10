@@ -22,13 +22,11 @@ const draw = (canvas: HTMLCanvasElement, providedDraw: ProvidedDraw) => (mouse: 
     let ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-
-
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.imageSmoothingEnabled = false;
 
-    providedDraw(ctx, mouse)
+    providedDraw(ctx, mouse);
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -42,7 +40,7 @@ const draw = (canvas: HTMLCanvasElement, providedDraw: ProvidedDraw) => (mouse: 
 export type ProvidedUpdate = (elapsedTime: number) => void;
 
 const update = (providedUpdate: ProvidedUpdate) => (
-    buttonsPressed: { [key: string]: boolean },
+    buttonsPressed: { [key: string]: boolean; },
     mouse: Mouse,
     elapsedTime: number
 ) => {
