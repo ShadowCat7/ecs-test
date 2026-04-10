@@ -1,6 +1,6 @@
 import { Component, Message, TimerMessage, System } from "../../sanguine/types.js";
 
-type Timer = undefined | TimerMessage & { elapsed: number }
+type Timer = undefined | TimerMessage & { elapsed: number; };
 
 export const timerSystem = (
     messager: (message: Message) => void,
@@ -26,7 +26,7 @@ export const timerSystem = (
                 }
             }
         }],
-        componentType: 'enemy',
+        componentType: 'timer',
         process: (components: Component[], elapsedTime: number) => {
             const cachedTimers = [...timers];
 
@@ -44,4 +44,4 @@ export const timerSystem = (
             }
         },
     };
-}
+};

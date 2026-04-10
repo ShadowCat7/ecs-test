@@ -3,6 +3,7 @@ import { getEntityList, addEntities, addEntity, getComponents, getCamera } from 
 import { addSubscriber, sendMail } from "./entities/mailbox.js";
 import { render, setupRender } from "./render/render.js";
 import { flushRenderQueue } from "./render/renderQueue.js";
+import { controlSystem } from "./systems/controlSystem.js";
 import { timerSystem } from "./systems/timerSystem.js";
 import { Prefab, Entity, System, Mailbox, Message } from "./types.js";
 
@@ -18,7 +19,7 @@ const renderPrefab = (prefab: Prefab, entity: Entity) => {
     for (const p of prefab.prefabs) {
         renderPrefab(p, entity);
     }
-}
+};
 
 export type Scene = ReturnType<typeof createScene>;
 
@@ -29,6 +30,7 @@ export const createScene = (initialEntities: Entity[], ...systemCreators: ((mess
 
     const systems = [
         timerSystem,
+        controlSystem,
         ...systemCreators
     ].map(x => x(messageSender));
 
@@ -65,11 +67,11 @@ export const createScene = (initialEntities: Entity[], ...systemCreators: ((mess
         },
         update: (elapsedTime: number) => {
             for (const system of systems) {
-                if (system.componentType == null) continue;
+                if (system.componentType === null || system.process === null) continue;
                 const components = getComponents(system.componentType);
                 system.process(components ?? [], elapsedTime);
             }
         },
         getEntities: () => entities,
-    }
-}
+    };
+};

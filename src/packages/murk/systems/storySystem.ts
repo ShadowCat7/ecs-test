@@ -1,7 +1,7 @@
-import { loadInk, updateVars } from "../../../ink/ink.js";
-import { assertMessage } from "../../../sanguine/messages.js";
-import { Component, Message, System } from "../../../sanguine/types.js";
-import { getControl, getFreshPress } from "../../controls.js";
+import { loadInk, updateVars } from "../../ink/ink.js";
+import { assertMessage } from "../../sanguine/messages.js";
+import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
+import { getFreshPress } from "../controls.js";
 import { StoryStartMessage } from "./types.js";
 
 export const storySystem = (
@@ -37,6 +37,14 @@ export const storySystem = (
 
     return {
         triggers: [{
+            messageType: "control_map",
+            handler: function (message) {
+                assertMessage<ControlMessage>(message, 'control_map');
+                if (message.current && !message.previous) {
+                    if (story) next();
+                }
+            }
+        }, {
             messageType: "storyStart",
             handler: async function (message: Message): Promise<void> {
                 assertMessage<StoryStartMessage>(message, 'storyStart');
@@ -68,10 +76,6 @@ export const storySystem = (
                 if (getFreshPress(i.toString() as any)) {
                     choose(i - 1);
                 }
-            }
-
-            if (getFreshPress('map')) {
-                next();
             }
         },
     };

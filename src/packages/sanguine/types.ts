@@ -51,7 +51,7 @@ export type Prefab = {
 export type System = {
     componentType: string | null,
     triggers?: Trigger[],
-    process: (components: Component[], elapsedTime: number) => void,
+    process: ((components: Component[], elapsedTime: number) => void) | null,
 };
 
 export interface Trigger {
@@ -67,4 +67,10 @@ export type TimerMessage = {
     type: 'timer',
     duration: number,
     responseType: string,
+};
+
+export type ControlMessage = {
+    type: `control_${string}`,
+    previous: boolean,
+    current: boolean,
 };

@@ -1,4 +1,4 @@
-import { Entity, Message } from "../../../sanguine/types.js"
+import { Entity, Message } from "../../../sanguine/types.js";
 
 export type CollisionMessage = Message & {
     entity1: Entity,
@@ -11,12 +11,12 @@ export type CollisionMessage = Message & {
 export type PlayerEatMessage = Message & {
     type: 'playerEat',
     amount: number,
-}
+};
 
 export type PlayerEatenMessage = Message & {
     type: 'playerEaten',
     eaten: Entity,
-}
+};
 
 export type PlayerBouncedMessage = Message & {
     type: 'playerBounced',
@@ -24,24 +24,19 @@ export type PlayerBouncedMessage = Message & {
     timeOfCollision: number,
     timeAfterCollision: number,
     collisionPoint: [number, number],
-}
+};
 
 export type LevelUpMessage = Message & {
     type: 'levelUp',
     level: number,
-}
+};
 
 export type LevelDownMessage = Message & {
     type: 'levelDown',
     level: number,
-}
+};
 
 export type ZoomMessage = Message & {
     type: 'zoom',
     amount: number,
-}
-
-export type StoryStartMessage = Message & {
-    type: 'storyStart',
-    name: string,
 };

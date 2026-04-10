@@ -26,10 +26,8 @@ const go = async () => {
         console.log(`${eventType} from ${filename}`);
         const fileExists = await exists(filename);
         if (eventType === 'rename' && !fileExists) {
-            console.log('deleting');
             deleteCompiled(filename);
         } else {
-            console.log('building');
             convert(filename);
         }
     }
@@ -38,7 +36,6 @@ const go = async () => {
 const deleteCompiled = async (filename: string) => {
     const newFilename = filename.split('.')[0] + '.json';
     const compiledFilename = `${JSON_DIR}${newFilename}`;
-    console.log(`deleting ${compiledFilename}`);
     await fs.rm(compiledFilename);
 };
 
@@ -63,9 +60,6 @@ const convert = async (filename: string) => {
 
 const fileHandler = {
     ResolveInkFilename: (filename: string, sourceFilename?: string | null) => {
-        console.log('resolve');
-        console.log(filename);
-        console.log(sourceFilename);
         return filename;
     },
     LoadInkFileContents: (filename: string, sourceFilename?: string | null) => {

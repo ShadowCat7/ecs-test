@@ -1,6 +1,7 @@
 // import { setViewPort } from '../constants.js';
 
 import { Mouse } from "../../packages/sanguine/types.js";
+import { raiseControlEvent } from "./buttons.js";
 
 const EPSILON = 0.00000001;
 const TARGET_FPS = 60;
@@ -92,22 +93,27 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
     document.addEventListener('keydown', (e) => {
         e.stopPropagation();
 
-        if (keysPressedLabel) {
-            keysPressedLabel.innerHTML = (e.code);
-        }
-        buttonsPressed[e.code] = true;
-
         if (!(buttonsPressed['KeyR'] && buttonsPressed['ControlLeft'] ||
             buttonsPressed['Tab'] && buttonsPressed['AltLeft'] ||
             buttonsPressed['F5'] || buttonsPressed['F12'])
         ) {
             e.preventDefault();
         }
+
+        if (e.repeat) return;
+
+        if (keysPressedLabel) {
+            keysPressedLabel.innerHTML = (e.code);
+        }
+        buttonsPressed[e.code] = true;
+
+        raiseControlEvent(e);
     });
 
     document.addEventListener('keyup', (e) => {
         e.stopPropagation();
         buttonsPressed[e.code] = false;
+        raiseControlEvent(e);
     });
 
     canvas.onmousedown = (e) => {
