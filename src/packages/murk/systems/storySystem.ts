@@ -4,6 +4,10 @@ import { Component, ControlMessage, Message, System } from "../../sanguine/types
 import { createControlTrigger, getFreshPress } from "../controls.js";
 import { StoryStartMessage } from "./types.js";
 
+const getText = (text: string) => {
+    return text.split('<br>').join('\n');
+};
+
 export const storySystem = (
     messager: (message: Message) => void,
 ): System => {
@@ -16,14 +20,14 @@ export const storySystem = (
     const next = () => {
         if (!story?.canContinue) return;
 
-        console.log(story.Continue());
+        console.log(getText(story.Continue()));
 
-        if (story.currentTags.length) console.log(story.currentTags.join(', '));
+        if (story.currentTags.length) console.log('tags: ', story.currentTags.join(', '));
 
         if (story.currentChoices.length) {
             for (const choice of story.currentChoices) {
                 const { index, text } = choice;
-                console.log(`${index + 1}) ${text}`);
+                console.log(`${index + 1}) ${getText(text)}`);
             }
         } else if (story.canContinue) console.log('--MORE--');
         else console.log('--END--');

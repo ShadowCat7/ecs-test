@@ -24,9 +24,5 @@ export const startup = async (canvas: HTMLCanvasElement) => {
 
     await createGame(canvas, prefabLocations, 'murk/components', update, draw);
 
-    const story = await loadInk('./data/inks/example.json');
-    console.log(story.Continue())
-    console.log(story.Continue())
-
     changeSceneType('test');
 };
