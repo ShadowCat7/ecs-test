@@ -1,7 +1,7 @@
 import { loadInk, updateVars } from "../../ink/ink.js";
 import { assertMessage } from "../../sanguine/messages.js";
 import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
-import { getFreshPress } from "../controls.js";
+import { createControlTrigger, getFreshPress } from "../controls.js";
 import { StoryStartMessage } from "./types.js";
 
 export const storySystem = (
@@ -36,27 +36,31 @@ export const storySystem = (
     };
 
     return {
-        triggers: [{
-            messageType: "control_map",
-            handler: function (message) {
-                assertMessage<ControlMessage>(message, 'control_map');
+        triggers: [
+            createControlTrigger('next', (message: ControlMessage) => {
                 if (message.current && !message.previous) {
                     if (story) next();
                 }
-            }
-        }, {
-            messageType: "storyStart",
-            handler: async function (message: Message): Promise<void> {
-                assertMessage<StoryStartMessage>(message, 'storyStart');
-                currentStoryName = message.name;
-                story = await loadInk(`./data/inks/${currentStoryName}.json`, {
-                    variables: {
-                        money,
-                    }
-                });
-                next();
-            }
-        }],
+            }),
+            createControlTrigger('up', (message: ControlMessage) => {
+                if (message.current && !message.previous) {
+                    money++;
+                    if (story) updateVars(story, { money });
+                }
+            }),
+            {
+                messageType: "storyStart",
+                handler: async function (message: Message): Promise<void> {
+                    assertMessage<StoryStartMessage>(message, 'storyStart');
+                    currentStoryName = message.name;
+                    story = await loadInk(`./data/inks/${currentStoryName}.json`, {
+                        variables: {
+                            money,
+                        }
+                    });
+                    next();
+                }
+            }],
         componentType: 'example',
         process: (components: Component[], elapsedTime: number) => {
             if (getFreshPress('down')) {
@@ -64,15 +68,9 @@ export const storySystem = (
                 messager(message);
             }
 
-            if (getFreshPress('up')) {
-                money++;
-                console.log(money);
-                if (story) updateVars(story, { money });
-            }
-
             if (!story) return;
 
-            for (let i = 1; i < 3; i++) {
+            for (let i = 1; i < 9; i++) {
                 if (getFreshPress(i.toString() as any)) {
                     choose(i - 1);
                 }
