@@ -50,11 +50,9 @@ export const drawText = (ctx: CanvasRenderingContext2D, text: string | string[],
 
     setupTextContext(ctx, options);
 
-    if (typeof text === 'string') {
-        ctx.fillText(text, x, y);
-    } else {
-        for (let i = 0; i < text.length; i++) {
-            ctx.fillText(text[i], x, y + (lineHeight + verticalPadding) * i);
-        }
+    const textArray = typeof text === 'string' ? text.split('\n') : text;
+
+    for (let i = 0; i < textArray.length; i++) {
+        ctx.fillText(textArray[i], x, y + (lineHeight + verticalPadding) * i);
     }
 };

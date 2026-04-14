@@ -2,9 +2,10 @@ import { prefab } from "./prefab.js";
 import { Prefab } from "../types.js";
 import { getComponent } from "./componentMapper.js";
 import { getValidDirectory } from "../util/directory.js";
+import { Shape } from "../render/types.js";
 
 const prefabData: {
-    [type: string]: Prefab
+    [type: string]: Prefab;
 } = {};
 
 const initPrefab = async (data: any, allData: any[]) => {
@@ -42,7 +43,7 @@ const initPrefab = async (data: any, allData: any[]) => {
     prefabData[type] = p;
 
     return p;
-}
+};
 
 export const initializePrefabs = async (prefabLocations: string[]) => {
     const prefabResponses = await Promise.all(prefabLocations.map(x => fetch(getValidDirectory(x))));
@@ -51,12 +52,12 @@ export const initializePrefabs = async (prefabLocations: string[]) => {
     for (let data of prefabDataList) {
         await initPrefab(data, prefabDataList);
     }
-}
+};
 
 export const getPrefabs = () => {
     return Object.values(prefabData);
-}
+};
 
 export const getPrefab = (type: string) => {
     return prefabData[type];
-}
+};

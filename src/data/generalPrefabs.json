@@ -1,5 +1,19 @@
 [
     {
+        "type": "dialogue",
+        "components": [],
+        "renders": [
+            {
+                "type": "text",
+                "text": "",
+                "color": "yellow",
+                "x": 200,
+                "y": 200,
+                "z": 1
+            }
+        ]
+    },
+    {
         "type": "grid",
         "renders": [
             {

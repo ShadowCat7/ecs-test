@@ -81,11 +81,11 @@ export const renderCircle = (renderItem: Circle, entity: Entity) => (ctx: Canvas
 }
 
 export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { text } = renderItem;
+    const { text, color } = renderItem;
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     drawText(ctx, text, x, y, {
-        textColor: 'black'
+        textColor: color ?? 'black',
     });
 }
 

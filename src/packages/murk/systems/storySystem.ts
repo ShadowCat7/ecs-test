@@ -1,5 +1,8 @@
 import { loadInk, updateVars } from "../../ink/ink.js";
+import { addEntity } from "../../sanguine/entities/entities.js";
+import { createEntity } from "../../sanguine/entities/entity.js";
 import { assertMessage } from "../../sanguine/messages.js";
+import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
 import { createControlTrigger, getFreshPress } from "../controls.js";
 import { StoryStartMessage } from "./types.js";
@@ -11,24 +14,38 @@ const getText = (text: string) => {
 export const storySystem = (
     messager: (message: Message) => void,
 ): System => {
-    // initialization logic here
-
     let currentStoryName: string | null = null;
     let story: any;
     let money = 0;
 
+    const dialogueEntity = createEntity(0, 0, getPrefab('dialogue'));
+    addEntity(dialogueEntity);
+    const text = dialogueEntity.prefab?.shapes?.find(x => x.type === 'text');
+    if (!text) throw new Error('"dialogue" is missing render of type `text`.');
+    const changeText = (newText: string) => {
+        text.text = newText;
+    };
+    const addText = (newText: string) => {
+        text.text += newText;
+        console.log(text.text);
+    };
+    const addChoices = (choices: { index: number, text: string; }[]) => {
+        const choiceText = [];
+        for (const { index, text } of choices) {
+            choiceText.push(`${index + 1}) ${text}`);
+        }
+        addText(choiceText.join('\n'));
+    };
+
     const next = () => {
         if (!story?.canContinue) return;
 
-        console.log(getText(story.Continue()));
+        changeText(getText(story.Continue()));
 
         if (story.currentTags.length) console.log('tags: ', story.currentTags.join(', '));
 
         if (story.currentChoices.length) {
-            for (const choice of story.currentChoices) {
-                const { index, text } = choice;
-                console.log(`${index + 1}) ${getText(text)}`);
-            }
+            addChoices(story.currentChoices);
         } else if (story.canContinue) console.log('--MORE--');
         else console.log('--END--');
     };
