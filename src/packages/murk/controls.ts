@@ -13,7 +13,7 @@ export const createControlTrigger = <T extends ControlMessage>(control: Control,
     };
 };
 
-export type Control = 'click' | 'map' | 'next'
+export type Control = 'click' | 'map' | 'next' | 'interact'
     | 'left' | 'right' | 'up' | 'down'
     | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0';
 
@@ -21,6 +21,7 @@ const controlButtonMap: { [key: string]: Control; } = {
     'LeftClick': 'click',
     'KeyM': 'map',
     'KeyN': 'next',
+    'KeyE': 'interact',
     'KeyA': 'left',
     'KeyD': 'right',
     'KeyS': 'down',

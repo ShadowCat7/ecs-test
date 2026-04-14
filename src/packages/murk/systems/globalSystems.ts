@@ -1,8 +1,10 @@
+import { conversationSystem } from "./conversationSystem.js";
 import { storySystem } from "./storySystem.js";
 
-export const roomPlaySystems = () => {
+export const globalSystems = () => {
     const systems = [
         storySystem,
+        conversationSystem,
     ];
 
     return systems;

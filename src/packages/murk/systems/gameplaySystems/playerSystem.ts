@@ -1,12 +1,10 @@
-import { addEntity, getComponents, getEntity, removeEntity } from "../../../sanguine/entities/entities.js";
+import { addEntity } from "../../../sanguine/entities/entities.js";
 import { Component, Message, System } from "../../../sanguine/types.js";
 import { createEntity } from "../../../sanguine/entities/entity.js";
 import { getPrefab } from "../../../sanguine/prefabs/prefabs.js";
 import { PhysicsComponent } from "../../components/physicsComponent.js";
 import { getControl } from "../../controls.js";
-import { projectVector, setMagnitude, setMagnitudeVector, subtractVector } from "../../../sanguine/util/vector.js";
-import { LevelDownMessage, LevelUpMessage, PlayerBouncedMessage, PlayerEatenMessage, PlayerEatMessage } from "./types.js";
-import { createTimer } from "../../../sanguine/util/timer.js";
+import { setMagnitude } from "../../../sanguine/util/vector.js";
 
 export const playerSystem = (
     messager: (message: Message) => void,
@@ -54,6 +52,6 @@ export const playerSystem = (
                     physics.velocityY = newVelocityY;
                 }
             }
-        };
+        }
     };
 };

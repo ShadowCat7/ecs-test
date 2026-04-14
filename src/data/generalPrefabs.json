@@ -9,7 +9,26 @@
                 "color": "yellow",
                 "x": 200,
                 "y": 200,
-                "z": 1
+                "z": 0
+            }
+        ]
+    },
+    {
+        "type": "conversation",
+        "components": [
+            {
+                "type": "conversation",
+                "story": "example"
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "x": 0,
+                "y": 0,
+                "z": 1,
+                "radius": 12,
+                "color": "green"
             }
         ]
     },

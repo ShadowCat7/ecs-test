@@ -84,11 +84,6 @@ export const storySystem = (
             }],
         componentType: 'example',
         process: (components: Component[], elapsedTime: number) => {
-            if (getFreshPress('down')) {
-                const message: StoryStartMessage = { type: 'storyStart', name: 'example' };
-                messager(message);
-            }
-
             if (!story) return;
 
             for (let i = 1; i < 9; i++) {
