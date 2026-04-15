@@ -5,9 +5,26 @@ import { getCamera } from "../entities/entities.js";
 import { Entity } from "../types.js";
 import { Circle, Grid, Rectangle, Render, Text } from "./types.js";
 import { assertUnreachable } from "../util/exhaustiveSwitch.js";
-import { drawCircle } from "../draw/drawCircle.js";
+import { drawCircle, drawCircleOutline } from "../draw/drawCircle.js";
 import { drawGrid } from "../draw/drawGrid.js";
 import { CameraComponent } from "../../castle/components/cameraComponent.js";
+
+export const getSize = (renderItem: Render) => {
+    const { type } = renderItem;
+    switch (type) {
+        case "rectangle":
+            return { width: renderItem.width, height: renderItem.height };
+        case "circle":
+            return { width: renderItem.radius * 2, height: renderItem.radius * 2 };
+        case "text":
+            throw new Error('Not implemented');
+        case "grid":
+            throw new Error('Not implemented');
+        default:
+            assertUnreachable(type);
+            throw new Error('Not handled');
+    }
+};
 
 const getRenderFunc = (renderItem: Render, entity: Entity) => {
     const { type } = renderItem;
@@ -65,17 +82,22 @@ export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: 
     ctx.rotate(entity.rotation);
     ctx.translate(-x - width / 2, -y - height / 2);
 
-    drawRectangle(ctx, x, y, width, height, 'white');
     if (outline) {
         drawRectangleOutline(ctx, x, y, width, height, outline, outlineColor ?? 'black');
     }
+
+    drawRectangle(ctx, x, y, width, height, 'white');
 
     ctx.resetTransform();
 };
 
 export const renderCircle = (renderItem: Circle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { radius, color } = renderItem;
+    const { radius, color, outline, outlineColor } = renderItem;
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
+
+    if (outline) {
+        drawCircleOutline(ctx, x, y, radius + outline + 1, outlineColor ?? 'white', outline, entity.scale);
+    }
 
     drawCircle(ctx, x, y, radius, color, entity.scale);
 };

@@ -2,14 +2,15 @@ import { addEntity, getComponents, getEntity, getEntityQuadtree } from "../../sa
 import { createEntity } from "../../sanguine/entities/entity.js";
 import { distance } from "../../sanguine/physics/distance.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
-import { Render, Text } from "../../sanguine/render/types.js";
+import { getSize } from "../../sanguine/render/render.js";
+import { Circle, Render, Text } from "../../sanguine/render/types.js";
 import { Component, ControlMessage, Entity, Message, System } from "../../sanguine/types.js";
 import { ConversationComponent } from "../components/conversationComponent.js";
 import { PlayerComponent } from "../components/playerComponent.js";
 import { createControlTrigger, getKeyForControl } from "../controls.js";
 import { StoryEndMessage, StoryStartMessage } from "./types.js";
 
-export const conversationSystem = (
+export const interactSystem = (
     messager: (message: Message) => void,
 ): System => {
     const convoCharacter = createEntity(300, 300, getPrefab('conversation'));
@@ -24,6 +25,11 @@ export const conversationSystem = (
 
     const setHighlight = () => {
         if (!closestInteract) return;
+        const shape = closestInteract.prefab?.shapes?.[0] as Circle;
+        shape.outline = 3;
+        shape.outlineColor = 'white';
+        const size = getSize(shape);
+
         const textRender: Text = {
             text: getKeyForControl('interact')?.[0] ?? 'E',
             color: 'red',
@@ -31,7 +37,7 @@ export const conversationSystem = (
             xAlign: 0,
             yAlign: -1,
             x: 0,
-            y: 0,
+            y: -size.height / 2,
             z: 2,
         };
         highlight = textRender;
@@ -39,6 +45,9 @@ export const conversationSystem = (
         closestInteract.renders.push(highlight);
     };
     const removeHighlight = () => {
+        const shape = closestInteract?.prefab?.shapes?.[0];
+        if (shape) (shape as any).outline = undefined;
+
         if (highlight) {
             const index = closestInteract?.renders?.indexOf(highlight);
             if (index !== undefined && index > -1) {

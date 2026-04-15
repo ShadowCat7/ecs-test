@@ -1,5 +1,4 @@
 murk:
-Highlight current interact.
 Highlight on mouse enter
 
 infra:

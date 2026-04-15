@@ -4,3 +4,11 @@ export const drawCircle = (ctx: CanvasRenderingContext2D, x: number, y: number, 
     ctx.arc(x, y, radius * scale, 0, Math.PI * 2);
     ctx.fill();
 };
+
+export const drawCircleOutline = (ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string, outline: number, scale: number = 1) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = outline;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * scale, 0, Math.PI * 2);
+    ctx.stroke();
+};
