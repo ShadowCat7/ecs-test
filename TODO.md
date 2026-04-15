@@ -1,6 +1,6 @@
 murk:
-grid item component
-check grid before moving to see if something is there
+Highlight current interact.
+Highlight on mouse enter
 
 infra:
 make button press only fire when button isn't being held down

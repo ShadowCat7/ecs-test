@@ -5,7 +5,7 @@ import { assertMessage } from "../../sanguine/messages.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
 import { createControlTrigger, getFreshPress } from "../controls.js";
-import { StoryStartMessage } from "./types.js";
+import { StoryEndMessage, StoryStartMessage } from "./types.js";
 
 const getText = (text: string) => {
     return text.split('<br>').join('\n');
@@ -73,6 +73,7 @@ export const storySystem = (
                 messageType: "storyStart",
                 handler: async function (message: Message): Promise<void> {
                     assertMessage<StoryStartMessage>(message, 'storyStart');
+                    dialogueEntity.visible = true;
                     currentStoryName = message.name;
                     story = await loadInk(`./data/inks/${currentStoryName}.json`, {
                         variables: {
@@ -81,7 +82,17 @@ export const storySystem = (
                     });
                     next();
                 }
-            }],
+            },
+            {
+                messageType: "storyEnd",
+                handler: async function (message: Message): Promise<void> {
+                    assertMessage<StoryEndMessage>(message, 'storyEnd');
+                    dialogueEntity.visible = false;
+                    currentStoryName = null;
+                    story = null;
+                }
+            }
+        ],
         componentType: 'example',
         process: (components: Component[], elapsedTime: number) => {
             if (!story) return;

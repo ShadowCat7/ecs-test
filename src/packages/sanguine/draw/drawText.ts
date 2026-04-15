@@ -56,3 +56,8 @@ export const drawText = (ctx: CanvasRenderingContext2D, text: string | string[],
         ctx.fillText(textArray[i], x, y + (lineHeight + verticalPadding) * i);
     }
 };
+
+export const measureText = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number, options: DrawTextOptions = defaultDrawTextOptions) => {
+    setupTextContext(ctx, options);
+    return ctx.measureText(text);
+};

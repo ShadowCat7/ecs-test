@@ -42,6 +42,8 @@ export const addControlEventHandler = (eventHandler: ControlEventHandler) => {
     eventHandlers.push(eventHandler);
 };
 
+const codeKeyMap: Map<string, string> = new Map<string, string>();
+
 const resolved = Promise.resolve();
 export const raiseControlEvent = (e: KeyboardEvent) => {
     const control = controlButtonMap[e.code];

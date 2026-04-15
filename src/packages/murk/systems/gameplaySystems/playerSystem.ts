@@ -5,20 +5,21 @@ import { getPrefab } from "../../../sanguine/prefabs/prefabs.js";
 import { PhysicsComponent } from "../../components/physicsComponent.js";
 import { getControl } from "../../controls.js";
 import { setMagnitude } from "../../../sanguine/util/vector.js";
+import { PlayerComponent } from "../../components/playerComponent.js";
 
-export const playerSystem = (
+export const playerMovementSystem = (
     messager: (message: Message) => void,
 ): System => {
     // create player
     const player = createEntity(300, 300, getPrefab('head'));
+    const playerComponent = player.getComponent<PlayerComponent>('player')!;
     const physics = player.getComponent<PhysicsComponent>('physics')!;
     physics.velocityX = 0;
     physics.velocityY = physics.topSpeed;
     addEntity(player);
 
     return {
-        triggers: [
-        ],
+        triggers: [],
         componentType: 'player',
         process: (components: Component[], elapsedTime: number) => {
             if (!player) return;
@@ -29,17 +30,19 @@ export const playerSystem = (
             let newX = 0;
             let newY = 0;
 
-            if (getControl('left').current) {
-                newX -= elapsedTime * 10;
-            }
-            if (getControl('right').current) {
-                newX += elapsedTime * 10;
-            }
-            if (getControl('up').current) {
-                newY -= elapsedTime * 10;
-            }
-            if (getControl('down').current) {
-                newY += elapsedTime * 10;
+            if (playerComponent.state !== 'dialogue') {
+                if (getControl('left').current) {
+                    newX -= elapsedTime * 10;
+                }
+                if (getControl('right').current) {
+                    newX += elapsedTime * 10;
+                }
+                if (getControl('up').current) {
+                    newY -= elapsedTime * 10;
+                }
+                if (getControl('down').current) {
+                    newY += elapsedTime * 10;
+                }
             }
 
             if (!newX && !newY) {

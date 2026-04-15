@@ -1,14 +1,13 @@
-import { loadInk, updateVars } from "../../ink/ink.js";
 import { addEntity, getComponents, getEntity, getEntityQuadtree } from "../../sanguine/entities/entities.js";
 import { createEntity } from "../../sanguine/entities/entity.js";
-import { assertMessage } from "../../sanguine/messages.js";
 import { distance } from "../../sanguine/physics/distance.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
-import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
+import { Render, Text } from "../../sanguine/render/types.js";
+import { Component, ControlMessage, Entity, Message, System } from "../../sanguine/types.js";
 import { ConversationComponent } from "../components/conversationComponent.js";
 import { PlayerComponent } from "../components/playerComponent.js";
-import { createControlTrigger, getFreshPress } from "../controls.js";
-import { StoryStartMessage } from "./types.js";
+import { createControlTrigger, getKeyForControl } from "../controls.js";
+import { StoryEndMessage, StoryStartMessage } from "./types.js";
 
 export const conversationSystem = (
     messager: (message: Message) => void,
@@ -20,33 +19,84 @@ export const conversationSystem = (
     if (!playerComponent) throw new Error('No player found.');
     const player = getEntity(playerComponent.entityId);
 
+    let closestInteract: Entity | null = null;
+    let highlight: Render | null = null;
+
+    const setHighlight = () => {
+        if (!closestInteract) return;
+        const textRender: Text = {
+            text: getKeyForControl('interact')?.[0] ?? 'E',
+            color: 'red',
+            type: 'text',
+            xAlign: 0,
+            yAlign: -1,
+            x: 0,
+            y: 0,
+            z: 2,
+        };
+        highlight = textRender;
+        closestInteract.renders ??= [];
+        closestInteract.renders.push(highlight);
+    };
+    const removeHighlight = () => {
+        if (highlight) {
+            const index = closestInteract?.renders?.indexOf(highlight);
+            if (index !== undefined && index > -1) {
+                closestInteract?.renders?.splice(index, 1);
+            }
+        }
+        highlight = null;
+        closestInteract = null;
+    };
+
     return {
         triggers: [
             createControlTrigger('interact', (message: ControlMessage) => {
-                if (message.current && !message.previous) {
-                    const quadtree = getEntityQuadtree();
-                    // TODO hard-coded width
-                    const near = quadtree.nearest(player.x, player.y, 20).filter(x => x.getComponent('conversation'));
-                    let nearest = near[0];
-                    let nearestDistance = distance(player.x, player.y, nearest.x, nearest.y);
-                    for (const entity of near) {
-                        const dist = distance(player.x, player.y, entity.x, entity.y);
-                        if (dist < nearestDistance) {
-                            nearest = entity;
-                            nearestDistance = dist;
-                        }
-                    }
-
-                    if (nearest && nearestDistance < 200) {
-                        const conversationComponent = nearest.getComponent<ConversationComponent>('conversation');
-                        if (!conversationComponent) return;
-                        const message: StoryStartMessage = { type: 'storyStart', name: conversationComponent.story };
-                        messager(message);
-                    }
+                if (playerComponent.state !== 'dialogue' && message.current && !message.previous && closestInteract) {
+                    playerComponent.state = 'dialogue';
+                    const conversationComponent = closestInteract.getComponent<ConversationComponent>('conversation');
+                    if (!conversationComponent) return;
+                    const message: StoryStartMessage = { type: 'storyStart', name: conversationComponent.story };
+                    removeHighlight();
+                    messager(message);
+                }
+            }),
+            createControlTrigger('escape', (message: ControlMessage) => {
+                if (playerComponent.state === 'dialogue' && message.current && !message.previous) {
+                    const message: StoryEndMessage = { type: 'storyEnd' };
+                    messager(message);
+                    playerComponent.state = undefined;
                 }
             }),
         ],
-        componentType: null,
-        process: null,
+        componentType: 'conversation',
+        process: (components: Component[], elapsedTime: number) => {
+            if (playerComponent.state === 'dialogue') return;
+
+            const quadtree = getEntityQuadtree();
+            const near = quadtree.nearest(player.x, player.y, 20).filter(x => x.getComponent('conversation'));
+            let nearest = near[0];
+            let nearestDistance = distance(player.x, player.y, nearest.x, nearest.y);
+            for (const entity of near) {
+                const dist = distance(player.x, player.y, entity.x, entity.y);
+                if (dist < nearestDistance) {
+                    nearest = entity;
+                    nearestDistance = dist;
+                }
+            }
+
+            if (closestInteract !== nearest || nearestDistance >= 200) {
+                removeHighlight();
+                closestInteract = null;
+            }
+
+            if (nearest && nearestDistance < 200) {
+                if (closestInteract === nearest) return;
+                closestInteract = nearest;
+                setHighlight();
+            } else {
+                closestInteract = null;
+            }
+        },
     };
 };

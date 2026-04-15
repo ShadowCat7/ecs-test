@@ -4,6 +4,7 @@ export type PlayerData = {
 };
 
 export type PlayerState = {
+    state?: 'dialogue'
 };
 
 export type PlayerComponent = StateComponent<PlayerData, PlayerState>;

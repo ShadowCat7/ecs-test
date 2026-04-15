@@ -28,6 +28,8 @@ export type Text = Default & {
     type: 'text',
     text: string,
     color?: string,
+    xAlign?: -1 | 0 | 1,
+    yAlign?: -1 | 0 | 1,
 };
 
 export type Grid = Shape & {

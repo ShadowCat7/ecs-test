@@ -1,5 +1,5 @@
 import { drawRectangle, drawRectangleOutline } from "../draw/drawRectangle.js";
-import { drawText } from "../draw/drawText.js";
+import { drawText, measureText } from "../draw/drawText.js";
 import { addRender } from "./renderQueue.js";
 import { getCamera } from "../entities/entities.js";
 import { Entity } from "../types.js";
@@ -25,7 +25,7 @@ const getRenderFunc = (renderItem: Render, entity: Entity) => {
             assertUnreachable(type);
             return () => { };
     }
-}
+};
 
 let camera: Entity | null = null;
 
@@ -42,20 +42,20 @@ export const setupRender = (ctx: CanvasRenderingContext2D) => {
     const drawY = -camera.y + ctx.canvas.height * cameraData.zoom / 2;
 
     ctx.translate(drawX, drawY);
-}
+};
 
 export const render = (renderItem: Render, entity: Entity) => {
     const renderFunc = getRenderFunc(renderItem, entity);
 
     addRender(renderItem.z, renderFunc);
-}
+};
 
 const getCameraRelatedPosition = (renderItem: Render, entity: Entity, canvasWidth: number, canvasHeight: number) => {
     const x = entity.x + renderItem.x;
     const y = entity.y + renderItem.y;
 
     return [x, y];
-}
+};
 
 export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
     const { width, height, outline, outlineColor } = renderItem;
@@ -71,27 +71,44 @@ export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: 
     }
 
     ctx.resetTransform();
-}
+};
 
 export const renderCircle = (renderItem: Circle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
     const { radius, color } = renderItem;
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     drawCircle(ctx, x, y, radius, color, entity.scale);
-}
+};
 
 export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { text, color } = renderItem;
-    const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
+    const { text, color, xAlign, yAlign } = renderItem;
+    let [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
-    drawText(ctx, text, x, y, {
+    const options = {
         textColor: color ?? 'black',
-    });
-}
+    };
+
+    const { width, actualBoundingBoxAscent, actualBoundingBoxDescent, alphabeticBaseline } = measureText(ctx, text, x, y, options);
+    const height = actualBoundingBoxAscent + actualBoundingBoxDescent;
+
+    if (xAlign === 0) {
+        x -= width / 2;
+    } else if (xAlign === 1) {
+        x -= width;
+    }
+
+    if (yAlign === 0) {
+        y -= height / 2;
+    } else if (yAlign === -1) {
+        y -= height;
+    }
+
+    drawText(ctx, text, x, y, options);
+};
 
 export const renderGrid = (renderItem: Grid, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
     const { width, height } = renderItem;
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     drawGrid(ctx, x, y, width, height, 30);
-}
+};
