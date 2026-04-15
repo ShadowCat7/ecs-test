@@ -10,7 +10,7 @@ export type CreateEntityOptions = {
         y?: number,
     },
     render: (entity: Entity, options: DrawOptions) => void,
-}
+};
 
 const getComponents = (prefab: Prefab, components: Component[]) => {
     components.push(...prefab.components.map(x => x()));
@@ -20,13 +20,15 @@ const getComponents = (prefab: Prefab, components: Component[]) => {
     for (const p of prefab.prefabs) {
         getComponents(p, components);
     }
-}
+};
 
 export const createEntity = (x: number, y: number, prefab?: Prefab, renders?: Render[]) => {
     const id = Math.random().toString().substring(2);
 
     const components: Component[] = [];
     const componentsByType = new Map<string, Component>();
+
+    const mappedRenders = renders?.map(x => ({ ...x }));
 
     const entity: Entity = {
         x,
@@ -36,7 +38,7 @@ export const createEntity = (x: number, y: number, prefab?: Prefab, renders?: Re
         id,
         visible: true,
         components,
-        renders,
+        renders: mappedRenders,
         prefab,
         getComponent: <T extends Component>(type: string) => componentsByType.get(type) as T | undefined,
         addComponent: (component: Component) => {
@@ -54,4 +56,4 @@ export const createEntity = (x: number, y: number, prefab?: Prefab, renders?: Re
     }
 
     return entity;
-}
+};

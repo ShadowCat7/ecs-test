@@ -1,5 +1,4 @@
 import { addEntity, getComponents, getEntity, getEntityQuadtree } from "../../sanguine/entities/entities.js";
-import { createEntity } from "../../sanguine/entities/entity.js";
 import { distance } from "../../sanguine/physics/distance.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { getSize } from "../../sanguine/render/render.js";
@@ -13,8 +12,12 @@ import { StoryEndMessage, StoryStartMessage } from "./types.js";
 export const interactSystem = (
     messager: (message: Message) => void,
 ): System => {
-    const convoCharacter = createEntity(300, 300, getPrefab('conversation'));
-    addEntity(convoCharacter);
+    const convoPrefab = getPrefab('conversation');
+    const convoCharacter1 = convoPrefab.createEntity(300, 300);
+    addEntity(convoCharacter1);
+
+    const convoCharacter2 = convoPrefab.createEntity(400, 300);
+    addEntity(convoCharacter2);
 
     const playerComponent = getComponents<PlayerComponent>('player')?.at(0);
     if (!playerComponent) throw new Error('No player found.');
@@ -25,7 +28,7 @@ export const interactSystem = (
 
     const setHighlight = () => {
         if (!closestInteract) return;
-        const shape = closestInteract.prefab?.shapes?.[0] as Circle;
+        const shape = closestInteract?.renders?.[0] as Circle;
         shape.outline = 3;
         shape.outlineColor = 'white';
         const size = getSize(shape);
@@ -45,7 +48,7 @@ export const interactSystem = (
         closestInteract.renders.push(highlight);
     };
     const removeHighlight = () => {
-        const shape = closestInteract?.prefab?.shapes?.[0];
+        const shape = closestInteract?.renders?.[0];
         if (shape) (shape as any).outline = undefined;
 
         if (highlight) {
@@ -83,9 +86,9 @@ export const interactSystem = (
             if (playerComponent.state === 'dialogue') return;
 
             const quadtree = getEntityQuadtree();
-            const near = quadtree.nearest(player.x, player.y, 20).filter(x => x.getComponent('conversation'));
+            const near = quadtree.nearest(player.x, player.y, 200).filter(x => x.getComponent('conversation'));
             let nearest = near[0];
-            let nearestDistance = distance(player.x, player.y, nearest.x, nearest.y);
+            let nearestDistance = nearest ? distance(player.x, player.y, nearest.x, nearest.y) : 201;
             for (const entity of near) {
                 const dist = distance(player.x, player.y, entity.x, entity.y);
                 if (dist < nearestDistance) {

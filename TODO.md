@@ -1,5 +1,5 @@
 murk:
-Highlight on mouse enter
+Build dialogue
 
 infra:
 make button press only fire when button isn't being held down

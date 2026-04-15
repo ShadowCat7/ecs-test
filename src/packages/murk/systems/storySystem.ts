@@ -1,6 +1,5 @@
 import { loadInk, updateVars } from "../../ink/ink.js";
 import { addEntity } from "../../sanguine/entities/entities.js";
-import { createEntity } from "../../sanguine/entities/entity.js";
 import { assertMessage } from "../../sanguine/messages.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
@@ -18,9 +17,12 @@ export const storySystem = (
     let story: any;
     let money = 0;
 
-    const dialogueEntity = createEntity(0, 0, getPrefab('dialogue'));
+    const dialogueEntity = getPrefab('dialogue').createEntity(0, 0);
     addEntity(dialogueEntity);
-    const text = dialogueEntity.prefab?.shapes?.find(x => x.type === 'text');
+
+    const dialogueItem = getPrefab('dialogueItem');
+
+    const text = dialogueItem.shapes?.find(x => x.type === 'text');
     if (!text) throw new Error('"dialogue" is missing render of type `text`.');
     const changeText = (newText: string) => {
         text.text = newText;

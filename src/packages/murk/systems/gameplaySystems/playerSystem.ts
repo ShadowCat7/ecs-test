@@ -1,6 +1,5 @@
 import { addEntity } from "../../../sanguine/entities/entities.js";
 import { Component, Message, System } from "../../../sanguine/types.js";
-import { createEntity } from "../../../sanguine/entities/entity.js";
 import { getPrefab } from "../../../sanguine/prefabs/prefabs.js";
 import { PhysicsComponent } from "../../components/physicsComponent.js";
 import { getControl } from "../../controls.js";
@@ -11,7 +10,7 @@ export const playerMovementSystem = (
     messager: (message: Message) => void,
 ): System => {
     // create player
-    const player = createEntity(300, 300, getPrefab('head'));
+    const player = getPrefab('head').createEntity(300, 300);
     const playerComponent = player.getComponent<PlayerComponent>('player')!;
     const physics = player.getComponent<PhysicsComponent>('physics')!;
     physics.velocityX = 0;

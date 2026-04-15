@@ -1,4 +1,5 @@
 import { addEntity } from "../../../sanguine/entities/entities.js";
+import { assertMessage } from "../../../sanguine/messages.js";
 import { getPrefab } from "../../../sanguine/prefabs/prefabs.js";
 import { Component, Message, System } from "../../../sanguine/types.js";
 import { DialogueMessage } from "../messageTypes.js";
@@ -10,16 +11,18 @@ export const dialogueSystem = (
     const entity = fab.createEntity(0, 0);
     entity.visible = false;
 
+    const speech = getPrefab('dialogueItem');
+
     addEntity(entity);
 
     return {
         triggers: [{
             messageType: 'dialogue',
             handler: (message: Message) => {
-                const dialogueMessage = message as DialogueMessage;
-                const { dialogueId } = dialogueMessage;
+                assertMessage<DialogueMessage>(message, 'dialogue');
+                const { dialogueId, } = message;
 
-                const dialogue = "hi what's your name"
+                const dialogue = "hi what's your name";
             }
         }],
         componentType: 'dialogue',
@@ -29,4 +32,4 @@ export const dialogueSystem = (
             }
         },
     };
-}
+};

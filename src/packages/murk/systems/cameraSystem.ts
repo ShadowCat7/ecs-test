@@ -1,5 +1,4 @@
 import { addEntity, getCamera, getComponents, getEntity } from "../../sanguine/entities/entities.js";
-import { createEntity } from "../../sanguine/entities/entity.js";
 import { hypotenuse } from "../../sanguine/physics/triangle.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { getScreenSize } from "../../sanguine/screen.js";
@@ -13,7 +12,7 @@ import { ZoomMessage } from "./gameplaySystems/types.js";
 export const cameraSystem = (
     messager: (message: Message) => void,
 ): System => {
-    const camera = createEntity(300, 300, getPrefab('camera'));
+    const camera = getPrefab('camera').createEntity(300, 300);
     const cameraComponent = camera.getComponent<CameraComponent>('camera')!;
     cameraComponent.active = true;
     addEntity(camera);
