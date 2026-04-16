@@ -27,7 +27,7 @@ export const storySystem = (
     if (!text) throw new Error('"dialogue" is missing render of type `text`.');
 
     const addBubble = (newText: string) => {
-        dialogueItem = dialogueItemFab.createEntity(0, 0);
+        dialogueItem = dialogueItemFab.createEntity(20, 0);
         text = dialogueItem.renders?.find(x => x.type === 'text')!;
         text.text = newText;
         addEntity(dialogueItem);

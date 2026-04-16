@@ -68,14 +68,17 @@ export const render = (renderItem: Render, entity: Entity) => {
 };
 
 const getCameraRelatedPosition = (renderItem: Render, entity: Entity, canvasWidth: number, canvasHeight: number) => {
-    const x = entity.x + renderItem.x;
-    const y = entity.y + renderItem.y;
-
-    return [x, y];
+    return [entity.x + renderItem.x, entity.y + renderItem.y];
 };
 
 export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { width, height, outline, outlineColor } = renderItem;
+    const { overlay, width, height, outline, outlineColor } = renderItem;
+
+    if (overlay) {
+        ctx.save();
+        ctx.resetTransform();
+    }
+
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     ctx.translate(x + width / 2, y + height / 2);
@@ -88,11 +91,17 @@ export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: 
 
     drawRectangle(ctx, x, y, width, height, 'white');
 
-    ctx.resetTransform();
+    if (overlay) ctx.restore();
 };
 
 export const renderCircle = (renderItem: Circle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { radius, color, outline, outlineColor } = renderItem;
+    const { overlay, radius, color, outline, outlineColor } = renderItem;
+
+    if (overlay) {
+        ctx.save();
+        ctx.resetTransform();
+    }
+
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     if (outline) {
@@ -100,10 +109,18 @@ export const renderCircle = (renderItem: Circle, entity: Entity) => (ctx: Canvas
     }
 
     drawCircle(ctx, x, y, radius, color, entity.scale);
+
+    if (overlay) ctx.restore();
 };
 
 export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { text, color, xAlign, yAlign } = renderItem;
+    const { overlay, text, color, xAlign, yAlign } = renderItem;
+
+    if (overlay) {
+        ctx.save();
+        ctx.resetTransform();
+    }
+
     let [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     const options = {
@@ -125,11 +142,21 @@ export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRend
     }
 
     drawText(ctx, text, x, y, options);
+
+    if (overlay) ctx.restore();
 };
 
 export const renderGrid = (renderItem: Grid, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { width, height } = renderItem;
+    const { overlay, width, height } = renderItem;
+
+    if (overlay) {
+        ctx.save();
+        ctx.resetTransform();
+    }
+
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
     drawGrid(ctx, x, y, width, height, 30);
+
+    if (overlay) ctx.restore();
 };

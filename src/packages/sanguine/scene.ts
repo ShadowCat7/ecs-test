@@ -1,5 +1,5 @@
 import { drawGrid } from "./draw/drawGrid.js";
-import { getEntityList, addEntities, addEntity, getComponents, getCamera } from "./entities/entities.js";
+import { getEntityList, addEntities, getComponents } from "./entities/entities.js";
 import { addSubscriber, sendMail } from "./entities/mailbox.js";
 import { render, setupRender } from "./render/render.js";
 import { flushRenderQueue } from "./render/renderQueue.js";

@@ -4,6 +4,7 @@ export type Default = {
     x: number,
     y: number,
     z: number,
+    overlay?: boolean,
 };
 
 export type Shape = Default & {

@@ -43,12 +43,16 @@ const defaultDrawTextOptions = {
 export const DEFAULT_LINE_HEIGHT = 30;
 export const DEFAULT_PADDING = 10;
 export const drawText = (ctx: CanvasRenderingContext2D, text: string | string[], x: number, y: number, options: DrawTextOptions = defaultDrawTextOptions) => {
+    const filledOptions = {
+        ...defaultDrawTextOptions,
+        ...options,
+    };
     const {
         lineHeight,
         verticalPadding,
-    } = { ...defaultDrawTextOptions, ...options };
+    } = filledOptions;
 
-    setupTextContext(ctx, options);
+    setupTextContext(ctx, filledOptions);
 
     const textArray = typeof text === 'string' ? text.split('\n') : text;
 

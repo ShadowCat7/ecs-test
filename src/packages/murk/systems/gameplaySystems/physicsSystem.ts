@@ -76,8 +76,6 @@ export const physicsSystem = (
                         component.moveToX = undefined;
                         component.moveToY = undefined;
                     } else {
-                        if (entity.prefab?.type === 'camera')
-                            var a = 2;
                         entity.x += x;
                         entity.y += y;
                     }
