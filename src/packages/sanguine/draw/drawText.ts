@@ -57,7 +57,21 @@ export const drawText = (ctx: CanvasRenderingContext2D, text: string | string[],
     }
 };
 
-export const measureText = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number, options: DrawTextOptions = defaultDrawTextOptions) => {
-    setupTextContext(ctx, options);
-    return ctx.measureText(text);
+const tempCanvas = document.createElement('canvas');
+const tempCtx = tempCanvas.getContext('2d')!;
+if (!tempCtx) throw new Error('Unable to create temporary 2D context.');
+export const measureText = (text: string, x: number, y: number, options: DrawTextOptions = defaultDrawTextOptions) => {
+    const {
+        lineHeight,
+        verticalPadding,
+    } = { ...defaultDrawTextOptions, ...options };
+
+    setupTextContext(tempCtx, options);
+    const lines = text.split('\n').length;
+    const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = tempCtx.measureText(text);
+
+    return {
+        width,
+        height: actualBoundingBoxAscent + actualBoundingBoxDescent + (lineHeight + verticalPadding) * (lines - 1)
+    };
 };

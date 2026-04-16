@@ -4,10 +4,11 @@ import { assertMessage } from "../../sanguine/messages.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
 import { createControlTrigger, getFreshPress } from "../controls.js";
+import { ContainerAddMessage } from "./messageTypes.js";
 import { StoryEndMessage, StoryStartMessage } from "./types.js";
 
 const getText = (text: string) => {
-    return text.split('<br>').join('\n');
+    return text.substring(0, text.length - 1).split('<br>');
 };
 
 export const storySystem = (
@@ -17,39 +18,42 @@ export const storySystem = (
     let story: any;
     let money = 0;
 
-    const dialogueEntity = getPrefab('dialogue').createEntity(0, 0);
-    addEntity(dialogueEntity);
+    const dialogue = getPrefab('dialogue').createEntity(0, 0);
+    addEntity(dialogue);
 
-    const dialogueItem = getPrefab('dialogueItem');
-
-    const text = dialogueItem.shapes?.find(x => x.type === 'text');
+    const dialogueItemFab = getPrefab('dialogueItem');
+    let dialogueItem = dialogueItemFab.createEntity(0, 0);
+    let text = dialogueItem.renders?.find(x => x.type === 'text')!;
     if (!text) throw new Error('"dialogue" is missing render of type `text`.');
-    const changeText = (newText: string) => {
+
+    const addBubble = (newText: string) => {
+        dialogueItem = dialogueItemFab.createEntity(0, 0);
+        text = dialogueItem.renders?.find(x => x.type === 'text')!;
         text.text = newText;
+        addEntity(dialogueItem);
+        const message: ContainerAddMessage = {
+            type: 'containerAdd',
+            entityId: dialogueItem.id,
+            containerId: dialogue.id,
+        };
+        messager(message);
     };
-    const addText = (newText: string) => {
-        text.text += newText;
-        console.log(text.text);
-    };
-    const addChoices = (choices: { index: number, text: string; }[]) => {
-        const choiceText = [];
-        for (const { index, text } of choices) {
-            choiceText.push(`${index + 1}) ${text}`);
-        }
-        addText(choiceText.join('\n'));
+    const getChoices = (choices: { index: number, text: string; }[]) => {
+        return choices.map(({ index, text }) => `${index + 1}) ${text}`);
     };
 
     const next = () => {
         if (!story?.canContinue) return;
-
-        changeText(getText(story.Continue()));
+        const text = getText(story.Continue());
 
         if (story.currentTags.length) console.log('tags: ', story.currentTags.join(', '));
 
         if (story.currentChoices.length) {
-            addChoices(story.currentChoices);
+            text.push(...getChoices(story.currentChoices));
         } else if (story.canContinue) console.log('--MORE--');
         else console.log('--END--');
+
+        addBubble(text.join('\n'));
     };
 
     const choose = (choice: number) => {
@@ -75,7 +79,7 @@ export const storySystem = (
                 messageType: "storyStart",
                 handler: async function (message: Message): Promise<void> {
                     assertMessage<StoryStartMessage>(message, 'storyStart');
-                    dialogueEntity.visible = true;
+                    dialogue.visible = true;
                     currentStoryName = message.name;
                     story = await loadInk(`./data/inks/${currentStoryName}.json`, {
                         variables: {
@@ -89,7 +93,7 @@ export const storySystem = (
                 messageType: "storyEnd",
                 handler: async function (message: Message): Promise<void> {
                     assertMessage<StoryEndMessage>(message, 'storyEnd');
-                    dialogueEntity.visible = false;
+                    dialogue.visible = false;
                     currentStoryName = null;
                     story = null;
                 }

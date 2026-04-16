@@ -1,9 +1,11 @@
 murk:
 Build dialogue
+    draw ignoring camera
 
 infra:
 make button press only fire when button isn't being held down
-
+don't duplicate renders but keep track of state elsewhere
+    aka separate prefab data with entity state
 
 castle:
 problems:

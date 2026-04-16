@@ -1,17 +1,12 @@
 import { getControlsInternal, setControlButtonMap } from "../sanguine/buttons.js";
 import { assertMessage } from "../sanguine/messages.js";
+import { createTrigger } from "../sanguine/system.js";
 import { ControlMessage, Message } from "../sanguine/types.js";
 import { groupMap } from "../sanguine/util/array.js";
 
 export const createControlTrigger = <T extends ControlMessage>(control: Control, handler: (message: T) => void) => {
     const type = `control_${control}` as const;
-    return {
-        messageType: type,
-        handler: (message: Message) => {
-            assertMessage<T>(message, type);
-            handler(message);
-        },
-    };
+    return createTrigger(type, handler);
 };
 
 export type Control = 'click' | 'map' | 'next' | 'interact' | 'escape'

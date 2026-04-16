@@ -35,6 +35,7 @@ export type Entity = {
     scale: number,
     renders?: Render[],
     prefab?: Prefab,
+    children: Entity[],
     getComponent: <T extends Component>(type: T["type"]) => T | undefined,
     addComponent: (component: Component) => void,
 };

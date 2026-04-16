@@ -110,8 +110,7 @@ export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRend
         textColor: color ?? 'black',
     };
 
-    const { width, actualBoundingBoxAscent, actualBoundingBoxDescent, alphabeticBaseline } = measureText(ctx, text, x, y, options);
-    const height = actualBoundingBoxAscent + actualBoundingBoxDescent;
+    const { width, height } = measureText(text, x, y, options);
 
     if (xAlign === 0) {
         x -= width / 2;

@@ -5,6 +5,7 @@ export type ContainerData = {
 };
 
 export type ContainerState = {
+    // height: 
 };
 
 export type ContainerComponent = StateComponent<ContainerData, ContainerState>;

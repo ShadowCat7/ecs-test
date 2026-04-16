@@ -40,6 +40,7 @@ export const createEntity = (x: number, y: number, prefab?: Prefab, renders?: Re
         components,
         renders: mappedRenders,
         prefab,
+        children: [],
         getComponent: <T extends Component>(type: string) => componentsByType.get(type) as T | undefined,
         addComponent: (component: Component) => {
             component.entityId = id;
