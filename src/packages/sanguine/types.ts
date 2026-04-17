@@ -8,6 +8,7 @@ export type ControlHistoryItem = {
 export type Mouse = {
     x: number,
     y: number,
+    scroll: number,
     leftClick: boolean,
     rightClick: boolean,
 };
@@ -74,4 +75,9 @@ export type ControlMessage = {
     type: `control_${string}`,
     previous: boolean,
     current: boolean,
+};
+
+export type WheelMessage = {
+    type: 'wheel',
+    delta: number,
 };

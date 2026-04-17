@@ -2,9 +2,10 @@ import { loadInk, updateVars } from "../../ink/ink.js";
 import { addEntity } from "../../sanguine/entities/entities.js";
 import { assertMessage } from "../../sanguine/messages.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
+import { createTrigger } from "../../sanguine/system.js";
 import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
 import { createControlTrigger, getFreshPress } from "../controls.js";
-import { ContainerAddMessage } from "./messageTypes.js";
+import { ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
 import { StoryEndMessage, StoryStartMessage } from "./types.js";
 
 const getText = (text: string) => {
@@ -75,29 +76,26 @@ export const storySystem = (
                     if (story) updateVars(story, { money });
                 }
             }),
-            {
-                messageType: "storyStart",
-                handler: async function (message: Message): Promise<void> {
-                    assertMessage<StoryStartMessage>(message, 'storyStart');
-                    dialogue.visible = true;
-                    currentStoryName = message.name;
-                    story = await loadInk(`./data/inks/${currentStoryName}.json`, {
-                        variables: {
-                            money,
-                        }
-                    });
-                    next();
-                }
-            },
-            {
-                messageType: "storyEnd",
-                handler: async function (message: Message): Promise<void> {
-                    assertMessage<StoryEndMessage>(message, 'storyEnd');
-                    dialogue.visible = false;
-                    currentStoryName = null;
-                    story = null;
-                }
-            }
+            createTrigger('storyStart', async (message: StoryStartMessage) => {
+                dialogue.visible = true;
+                currentStoryName = message.name;
+                story = await loadInk(`./data/inks/${currentStoryName}.json`, {
+                    variables: {
+                        money,
+                    }
+                });
+                next();
+            }),
+            createTrigger('storyEnd', (_: StoryEndMessage) => {
+                dialogue.visible = false;
+                currentStoryName = null;
+                story = null;
+                const message: ContainerDeleteChildrenMessage = {
+                    type: 'containerDeleteChildren',
+                    containerId: dialogue.id,
+                };
+                messager(message);
+            })
         ],
         componentType: 'example',
         process: (components: Component[], elapsedTime: number) => {

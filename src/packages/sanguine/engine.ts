@@ -1,7 +1,7 @@
 // import { setViewPort } from '../constants.js';
 
 import { Mouse } from "../../packages/sanguine/types.js";
-import { raiseControlEvent } from "./buttons.js";
+import { raiseControlEvent, raiseWheelEvent } from "./buttons.js";
 
 const EPSILON = 0.00000001;
 const TARGET_FPS = 60;
@@ -21,6 +21,7 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
     const mouse = {
         x: 0,
         y: 0,
+        scroll: 0,
         leftClick: false,
         rightClick: false,
     };
@@ -151,6 +152,10 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
         mouse.x = touch.pageX - canvas.offsetLeft;
         mouse.y = touch.pageY - canvas.offsetTop;
     }, false);
+
+    document.addEventListener('wheel', (e) => {
+        raiseWheelEvent(e.deltaY);
+    });
 
     return {
         getFps: () => fps,

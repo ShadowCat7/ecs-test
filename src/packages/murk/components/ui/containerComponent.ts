@@ -5,7 +5,7 @@ export type ContainerData = {
 };
 
 export type ContainerState = {
-    // height: 
+    scrollY: number;
 };
 
 export type ContainerComponent = StateComponent<ContainerData, ContainerState>;
@@ -14,6 +14,7 @@ export const ContainerComponent = (data?: Partial<ContainerData>, state?: Partia
     return {
         scroll: false,
         ...data,
+        scrollY: 0,
         ...state,
         type: 'container',
         entityId: '',

@@ -31,18 +31,15 @@ export const setControlButtonMap = (newControlButtonMap: Dictionary<string, stri
 const handleControl = (controlButtonMap: Dictionary<string, string>, button: string, value: boolean) => {
     const control = controlButtonMap[button];
 
-    if (control)
-        updateControl(controls[control], value);
+    if (control) updateControl(controls[control], value);
 };
 
 export type ControlEventHandler = (control: string, current: boolean, previous: boolean) => void;
-const eventHandlers: ControlEventHandler[] = [];
+const controlEventHandlers: ControlEventHandler[] = [];
 
 export const addControlEventHandler = (eventHandler: ControlEventHandler) => {
-    eventHandlers.push(eventHandler);
+    controlEventHandlers.push(eventHandler);
 };
-
-const codeKeyMap: Map<string, string> = new Map<string, string>();
 
 const resolved = Promise.resolve();
 export const raiseControlEvent = (e: KeyboardEvent) => {
@@ -50,8 +47,24 @@ export const raiseControlEvent = (e: KeyboardEvent) => {
     if (!control) return resolved;
     return new Promise<void>((resolve) => {
         const history = controls[control];
-        for (const eventHandler of eventHandlers) {
+        for (const eventHandler of controlEventHandlers) {
             eventHandler(control, e.type === 'keydown', history.current);
+        }
+        resolve();
+    });
+};
+
+export type WheelEventHandler = (delta: number) => void;
+const wheelEventHandlers: WheelEventHandler[] = [];
+
+export const addWheelEventHandler = (eventHandler: WheelEventHandler) => {
+    wheelEventHandlers.push(eventHandler);
+};
+
+export const raiseWheelEvent = (delta: number) => {
+    return new Promise<void>((resolve) => {
+        for (const eventHandler of wheelEventHandlers) {
+            eventHandler(delta);
         }
         resolve();
     });

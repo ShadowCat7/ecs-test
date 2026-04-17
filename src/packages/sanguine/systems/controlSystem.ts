@@ -1,5 +1,5 @@
-import { Message, ControlMessage, System } from "../../sanguine/types.js";
-import { addControlEventHandler } from "../buttons.js";
+import { Message, ControlMessage, System, WheelMessage } from "../../sanguine/types.js";
+import { addControlEventHandler, addWheelEventHandler } from "../buttons.js";
 
 export const controlSystem = (
     messager: (message: Message) => void,
@@ -9,6 +9,13 @@ export const controlSystem = (
             type: `control_${control}`,
             current,
             previous,
+        };
+        messager(message);
+    });
+    addWheelEventHandler((delta: number) => {
+        const message: WheelMessage = {
+            type: 'wheel',
+            delta,
         };
         messager(message);
     });
