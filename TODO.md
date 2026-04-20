@@ -1,6 +1,7 @@
 murk:
 Build dialogue
     draw ignoring camera
+    disable next while animating
 
 infra:
 make button press only fire when button isn't being held down

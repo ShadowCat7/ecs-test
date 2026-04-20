@@ -21,6 +21,14 @@ export const containerSystem = (
     messager: (message: Message) => void,
 ): System => {
     const wheelEvents: number[] = [];
+    let maxScrolled = false;
+    let animating = false;
+    let animationDuration = 0.5;
+    let currentDuration = 0;
+    let animatingDistance = 0;
+    let startingDistance = 0;
+
+    const messagePadding = 40;
 
     return {
         triggers: [
@@ -30,16 +38,22 @@ export const containerSystem = (
                 const containerComponent = container.getComponent<ContainerComponent>('container');
                 if (!containerComponent) throw new Error('Container is not a container');
 
-                const nextY = getContainerSize(container) + 40;
+                const lastY = getContainerSize(container);
 
                 const entity = getEntity(entityId);
-                entity.y = nextY;
+                entity.y = lastY + messagePadding;
+                if (entity.y === messagePadding) entity.y -= messagePadding - 20;
                 container.children.push(entity);
 
                 const entityHeight = measureText((entity.renders?.find(x => x.type === 'text') as Text).text, 0, 0).height;
 
-                if (entity.y + entityHeight > getScreenSize()[1]) {
-                    // start to scroll
+                const [_, screenHeight] = getScreenSize();
+                if ((lastY < screenHeight || maxScrolled) && entity.y + entityHeight > screenHeight) {
+                    currentDuration = 0;
+                    animating = true;
+                    startingDistance = (screenHeight - 20) - lastY;
+                    animatingDistance = entityHeight + messagePadding;
+                    wheelEvents.push(animatingDistance);
                 }
             }),
             createTrigger<ContainerDeleteChildrenMessage>('containerDeleteChildren', (message) => {
@@ -52,6 +66,10 @@ export const containerSystem = (
                 container.children.length = 0;
             }),
             createTrigger<WheelMessage>('wheel', ({ delta }) => {
+                if (animating) {
+                    animating = false;
+                    wheelEvents.length = 0;
+                }
                 wheelEvents.push(-delta);
             }),
         ],
@@ -67,18 +85,39 @@ export const containerSystem = (
                 scrollingContainerComponent = component;
             }
 
-            const totalScroll = sum(wheelEvents, x => x);
+            if (!scrollingContainerComponent) {
+                wheelEvents.length = 0;
+                return;
+            }
+
+            let totalScroll = sum(wheelEvents, x => x);
             wheelEvents.length = 0;
-            if (!scrollingContainerComponent) return;
+
+            if (animating) {
+                if (currentDuration >= animationDuration) {
+                    currentDuration = 0;
+                    totalScroll = -animatingDistance;
+                    animating = false;
+                } else {
+                    currentDuration += elapsedTime;
+                    const x = currentDuration / animationDuration;
+                    const animatedSpeed = 1 - (1 - x) * (1 - x);
+                    const newLocation = -animatingDistance * animatedSpeed + startingDistance;
+                    totalScroll = newLocation - scrollingContainerComponent.scrollY;
+                    wheelEvents.push(animatingDistance);
+                }
+            }
 
             const container = getEntity(scrollingContainerComponent.entityId);
             scrollingContainerComponent.scrollY += totalScroll;
-            const containerHeight = getContainerSize(container) + 20;
+            const containerHeight = getContainerSize(container);
 
             const [_, screenHeight] = getScreenSize();
-            const lowest = containerHeight <= screenHeight ? 0 : screenHeight - containerHeight;
+            const lowest = containerHeight <= (screenHeight - 20) ? 0 : (screenHeight - 20) - containerHeight;
 
             scrollingContainerComponent.scrollY = clamp(scrollingContainerComponent.scrollY, 0, lowest);
+
+            maxScrolled = scrollingContainerComponent.scrollY === lowest;
 
             for (const child of container.children) {
                 if (!child.renders?.length) continue;
