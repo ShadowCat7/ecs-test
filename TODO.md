@@ -1,5 +1,6 @@
 murk:
 Build dialogue
+    if not fully scrolled and then next, scroll to bottom
     make container system work with multiple containers existing
 
 infra:

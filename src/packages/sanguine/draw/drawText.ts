@@ -32,17 +32,18 @@ const setupTextContext = (ctx: CanvasRenderingContext2D, options: TextContextOpt
 export type DrawTextOptions = TextContextOptions & {
     lineHeight?: number,
     verticalPadding?: number,
-};
-
-const defaultDrawTextOptions = {
-    ...defaultTextContextOptions,
-    lineHeight: 30,
-    verticalPadding: 10,
+    maxWidth?: number,
 };
 
 export const DEFAULT_LINE_HEIGHT = 30;
 export const DEFAULT_PADDING = 10;
-export const drawText = (ctx: CanvasRenderingContext2D, text: string | string[], x: number, y: number, options: DrawTextOptions = defaultDrawTextOptions) => {
+
+const defaultDrawTextOptions = {
+    ...defaultTextContextOptions,
+    lineHeight: DEFAULT_LINE_HEIGHT,
+    verticalPadding: DEFAULT_PADDING,
+};
+export const drawText = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number, options: DrawTextOptions = defaultDrawTextOptions) => {
     const filledOptions = {
         ...defaultDrawTextOptions,
         ...options,
@@ -50,11 +51,12 @@ export const drawText = (ctx: CanvasRenderingContext2D, text: string | string[],
     const {
         lineHeight,
         verticalPadding,
+        maxWidth,
     } = filledOptions;
 
     setupTextContext(ctx, filledOptions);
 
-    const textArray = typeof text === 'string' ? text.split('\n') : text;
+    const textArray = maxWidth ? delineate(text, maxWidth) : text.split('\n');
 
     for (let i = 0; i < textArray.length; i++) {
         ctx.fillText(textArray[i], x, y + (lineHeight + verticalPadding) * i);
@@ -68,14 +70,58 @@ export const measureText = (text: string, x: number, y: number, options: DrawTex
     const {
         lineHeight,
         verticalPadding,
+        maxWidth,
     } = { ...defaultDrawTextOptions, ...options };
 
     setupTextContext(tempCtx, options);
-    const lines = text.split('\n').length;
-    const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = tempCtx.measureText(text);
+    const lines = maxWidth ? delineate(text, maxWidth) : text.split('\n');
+    return measureLines(lines, lineHeight, verticalPadding);
+};
 
+const measureLines = (lines: string[], lineHeight: number, verticalPadding: number) => {
+    let totalWidth = 0;
+    let totalHeight = (lineHeight + verticalPadding) * lines.length - verticalPadding;
+    for (const line of lines) {
+        const { width } = tempCtx.measureText(line);
+        if (width > totalWidth) totalWidth = width;
+    }
     return {
-        width,
-        height: actualBoundingBoxAscent + actualBoundingBoxDescent + (lineHeight + verticalPadding) * (lines - 1)
+        width: totalWidth,
+        height: totalHeight,
     };
+};
+
+const delineate = (text: string, maxWidth: number) => {
+    const lineBreaks = text.split('\n');
+
+    const lines: string[] = [''];
+    let index = 0;
+    let x = 0;
+    let biggestWidth = 0;
+
+    const spaceWidth = tempCtx.measureText(' ').width;
+
+    for (const line of lineBreaks) {
+        for (const word of line.split(' ')) {
+            const withSpace = ' ' + word;
+            const { width } = tempCtx.measureText(x === 0 ? word : withSpace);
+            if ((x + (x ? width + spaceWidth : width)) > maxWidth) {
+                lines.push(word);
+                if (x > biggestWidth) biggestWidth = x;
+                x = width;
+                index++;
+            } else {
+                lines[index] += x > 0 ? withSpace : word;
+                x += spaceWidth + width;
+            }
+        }
+        if (x > biggestWidth) biggestWidth = x;
+        x = 0;
+        lines.push('');
+        index++;
+    }
+
+    lines.length = lines.length - 1;
+
+    return lines;
 };

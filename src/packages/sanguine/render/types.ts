@@ -31,6 +31,7 @@ export type Text = Default & {
     color?: string,
     xAlign?: -1 | 0 | 1,
     yAlign?: -1 | 0 | 1,
+    maxWidth?: number,
 };
 
 export type Grid = Shape & {

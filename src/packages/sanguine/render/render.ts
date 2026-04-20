@@ -72,7 +72,7 @@ const getCameraRelatedPosition = (renderItem: Render, entity: Entity, canvasWidt
 };
 
 export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { overlay, width, height, outline, outlineColor } = renderItem;
+    const { overlay, width, height, outline, outlineColor, color } = renderItem;
 
     if (overlay) {
         ctx.save();
@@ -81,15 +81,17 @@ export const renderRectangle = (renderItem: Rectangle, entity: Entity) => (ctx: 
 
     const [x, y] = getCameraRelatedPosition(renderItem, entity, ctx.canvas.width, ctx.canvas.height);
 
-    ctx.translate(x + width / 2, y + height / 2);
-    ctx.rotate(entity.rotation);
-    ctx.translate(-x - width / 2, -y - height / 2);
+    if (entity.rotation) {
+        ctx.translate(x + width / 2, y + height / 2);
+        ctx.rotate(entity.rotation);
+        ctx.translate(-x - width / 2, -y - height / 2);
+    }
 
     if (outline) {
         drawRectangleOutline(ctx, x, y, width, height, outline, outlineColor ?? 'black');
     }
 
-    drawRectangle(ctx, x, y, width, height, 'white');
+    drawRectangle(ctx, x, y, width, height, color ?? 'white');
 
     if (overlay) ctx.restore();
 };
@@ -114,7 +116,7 @@ export const renderCircle = (renderItem: Circle, entity: Entity) => (ctx: Canvas
 };
 
 export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRenderingContext2D) => {
-    const { overlay, text, color, xAlign, yAlign } = renderItem;
+    const { overlay, text, color, xAlign, yAlign, maxWidth, } = renderItem;
 
     if (overlay) {
         ctx.save();
@@ -125,6 +127,7 @@ export const renderText = (renderItem: Text, entity: Entity) => (ctx: CanvasRend
 
     const options = {
         textColor: color ?? 'black',
+        maxWidth,
     };
 
     const { width, height } = measureText(text, x, y, options);

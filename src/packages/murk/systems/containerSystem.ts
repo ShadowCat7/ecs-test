@@ -1,7 +1,7 @@
 import { getMousePosition } from "../../sanguine/buttons.js";
 import { measureText } from "../../sanguine/draw/drawText.js";
 import { getEntity, removeEntity } from "../../sanguine/entities/entities.js";
-import { Text } from "../../sanguine/render/types.js";
+import { Rectangle, Text } from "../../sanguine/render/types.js";
 import { getScreenSize } from "../../sanguine/screen.js";
 import { createTrigger } from "../../sanguine/system.js";
 import { Component, Entity, Message, System, WheelMessage } from "../../sanguine/types.js";
@@ -12,13 +12,14 @@ import { ContainerComponent } from "../components/ui/containerComponent.js";
 import { ContainerAddAnimatedMessage, ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
 
 const getContainerSize = (container: Entity) => {
+    const firstChild = container.children[0];
+    if (!firstChild) return 0;
     const lastChild = container.children[container.children.length - 1];
-    if (!lastChild) return 0;
     const textRender = lastChild.renders?.find(x => x.type === 'text') as Text;
-    return lastChild.y + measureText(textRender.text, lastChild.x, lastChild.y).height;
+    return (lastChild.y - firstChild.y) + measureText(textRender.text, lastChild.x, lastChild.y, { maxWidth: textRender.maxWidth }).height;
 };
 
-const DEFAULT_ANIMATING_DURATION = 0.5;
+const DEFAULT_ANIMATING_DURATION = 0.4;
 
 export const containerSystem = (
     messager: (message: Message) => void,
@@ -38,19 +39,32 @@ export const containerSystem = (
                 const containerComponent = container.getComponent<ContainerComponent>('container');
                 if (!containerComponent) throw new Error('Container is not a container');
 
-                const lastY = getContainerSize(container);
+                const containerSize = getContainerSize(container);
+                const lastY = containerSize + containerComponent.scrollY;
 
                 const entity = getEntity(entityId);
                 entity.y = lastY + messagePadding;
                 if (entity.y === messagePadding) entity.y -= messagePadding - 20;
                 container.children.push(entity);
 
-                const entityHeight = measureText((entity.renders?.find(x => x.type === 'text') as Text).text, 0, 0).height;
+                const textRender = entity.renders?.find(x => x.type === 'text') as Text;
+                const textSize = measureText(textRender.text, 0, 0, { maxWidth: textRender.maxWidth });
+                const rect: Rectangle = {
+                    color: 'grey',
+                    height: textSize.height + messagePadding / 4,
+                    width: textSize.width + messagePadding / 4,
+                    type: 'rectangle',
+                    x: -messagePadding / 8,
+                    y: -messagePadding / 8,
+                    z: textRender.z - 1,
+                    overlay: true,
+                };
+                entity.renders?.push(rect);
 
                 const [_, screenHeight] = getScreenSize();
-                if ((lastY < screenHeight - 20 || maxScrolled) && entity.y + entityHeight > screenHeight - 20) {
+                if ((containerSize < screenHeight - 20 || maxScrolled) && entity.y - containerComponent.scrollY + textSize.height > screenHeight - 20) {
                     animating = true;
-                    const animatingDistance = -entityHeight - messagePadding;
+                    const animatingDistance = -textSize.height - messagePadding;
                     currentInterp = beginInterpolate(animatingDistance, DEFAULT_ANIMATING_DURATION, quadraticOut);
                     wheelEvents.push(animatingDistance);
                 } else {
@@ -69,6 +83,8 @@ export const containerSystem = (
                     removeEntity(entity.id);
                 }
                 container.children.length = 0;
+                const containerComponent = container.getComponent<ContainerComponent>('container')!;
+                containerComponent.scrollY = 0;
             }),
             createTrigger<WheelMessage>('wheel', ({ delta }) => {
                 if (animating) {
@@ -114,22 +130,20 @@ export const containerSystem = (
                 }
             }
 
-            const container = getEntity(scrollingContainerComponent.entityId);
-            scrollingContainerComponent.scrollY += totalScroll;
-            const containerHeight = getContainerSize(container);
-
             const [_, screenHeight] = getScreenSize();
-            const lowest = containerHeight <= (screenHeight - 20) ? 0 : (screenHeight - 20) - containerHeight;
+            const container = getEntity(scrollingContainerComponent.entityId);
+            const containerHeight = getContainerSize(container);
+            const lowest = containerHeight <= (screenHeight - 40) ? 0 : (screenHeight - 40) - containerHeight;
+
+            const oldPrevious = scrollingContainerComponent.scrollY;
+            scrollingContainerComponent.scrollY += totalScroll;
 
             scrollingContainerComponent.scrollY = clamp(scrollingContainerComponent.scrollY, 0, lowest);
 
             maxScrolled = scrollingContainerComponent.scrollY === lowest;
 
             for (const child of container.children) {
-                if (!child.renders?.length) continue;
-                for (const render of child.renders) {
-                    render.y = scrollingContainerComponent.scrollY;
-                }
+                child.y = child.y - oldPrevious + scrollingContainerComponent.scrollY;
             }
         },
     };
