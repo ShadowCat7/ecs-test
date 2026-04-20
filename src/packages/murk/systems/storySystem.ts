@@ -5,7 +5,7 @@ import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { createTrigger } from "../../sanguine/system.js";
 import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
 import { createControlTrigger, getFreshPress } from "../controls.js";
-import { ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
+import { ContainerAddAnimatedMessage, ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
 import { StoryEndMessage, StoryStartMessage } from "./types.js";
 
 const getText = (text: string) => {
@@ -18,6 +18,7 @@ export const storySystem = (
     let currentStoryName: string | null = null;
     let story: any;
     let money = 0;
+    let disabled = false;
 
     const dialogue = getPrefab('dialogue').createEntity(0, 0);
     addEntity(dialogue);
@@ -37,6 +38,7 @@ export const storySystem = (
             entityId: dialogueItem.id,
             containerId: dialogue.id,
         };
+        disabled = true;
         messager(message);
     };
     const getChoices = (choices: { index: number, text: string; }[]) => {
@@ -66,15 +68,13 @@ export const storySystem = (
     return {
         triggers: [
             createControlTrigger('next', (message: ControlMessage) => {
-                if (message.current && !message.previous) {
+                if (!disabled && message.current && !message.previous) {
                     if (story) next();
                 }
             }),
-            createControlTrigger('up', (message: ControlMessage) => {
-                if (message.current && !message.previous) {
-                    money++;
-                    if (story) updateVars(story, { money });
-                }
+            createTrigger('containerAddAnimated', (message: ContainerAddAnimatedMessage) => {
+                if (message.containerId === dialogue.id)
+                    disabled = false;
             }),
             createTrigger('storyStart', async (message: StoryStartMessage) => {
                 dialogue.visible = true;

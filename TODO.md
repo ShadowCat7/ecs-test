@@ -1,10 +1,8 @@
 murk:
 Build dialogue
-    draw ignoring camera
-    disable next while animating
+    make container system work with multiple containers existing
 
 infra:
-make button press only fire when button isn't being held down
 don't duplicate renders but keep track of state elsewhere
     aka separate prefab data with entity state
 

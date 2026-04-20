@@ -6,9 +6,10 @@ import { getScreenSize } from "../../sanguine/screen.js";
 import { createTrigger } from "../../sanguine/system.js";
 import { Component, Entity, Message, System, WheelMessage } from "../../sanguine/types.js";
 import { sum } from "../../sanguine/util/array.js";
+import { beginInterpolate, quadraticOut } from "../../sanguine/util/interpolation.js";
 import { clamp } from "../../sanguine/util/number.js";
 import { ContainerComponent } from "../components/ui/containerComponent.js";
-import { ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
+import { ContainerAddAnimatedMessage, ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
 
 const getContainerSize = (container: Entity) => {
     const lastChild = container.children[container.children.length - 1];
@@ -17,16 +18,15 @@ const getContainerSize = (container: Entity) => {
     return lastChild.y + measureText(textRender.text, lastChild.x, lastChild.y).height;
 };
 
+const DEFAULT_ANIMATING_DURATION = 0.5;
+
 export const containerSystem = (
     messager: (message: Message) => void,
 ): System => {
     const wheelEvents: number[] = [];
     let maxScrolled = false;
     let animating = false;
-    let animationDuration = 0.5;
-    let currentDuration = 0;
-    let animatingDistance = 0;
-    let startingDistance = 0;
+    let currentInterp = beginInterpolate(0, 0, quadraticOut);
 
     const messagePadding = 40;
 
@@ -48,12 +48,17 @@ export const containerSystem = (
                 const entityHeight = measureText((entity.renders?.find(x => x.type === 'text') as Text).text, 0, 0).height;
 
                 const [_, screenHeight] = getScreenSize();
-                if ((lastY < screenHeight || maxScrolled) && entity.y + entityHeight > screenHeight) {
-                    currentDuration = 0;
+                if ((lastY < screenHeight - 20 || maxScrolled) && entity.y + entityHeight > screenHeight - 20) {
                     animating = true;
-                    startingDistance = (screenHeight - 20) - lastY;
-                    animatingDistance = entityHeight + messagePadding;
+                    const animatingDistance = -entityHeight - messagePadding;
+                    currentInterp = beginInterpolate(animatingDistance, DEFAULT_ANIMATING_DURATION, quadraticOut);
                     wheelEvents.push(animatingDistance);
+                } else {
+                    const message: ContainerAddAnimatedMessage = {
+                        type: 'containerAddAnimated',
+                        containerId: containerId,
+                    };
+                    messager(message);
                 }
             }),
             createTrigger<ContainerDeleteChildrenMessage>('containerDeleteChildren', (message) => {
@@ -94,17 +99,18 @@ export const containerSystem = (
             wheelEvents.length = 0;
 
             if (animating) {
-                if (currentDuration >= animationDuration) {
-                    currentDuration = 0;
-                    totalScroll = -animatingDistance;
+                const newLocation = currentInterp(elapsedTime);
+                if (newLocation === undefined) {
+                    const message: ContainerAddAnimatedMessage = {
+                        type: 'containerAddAnimated',
+                        containerId: scrollingContainerComponent.entityId,
+                    };
+                    messager(message);
+                    totalScroll = -100;
                     animating = false;
                 } else {
-                    currentDuration += elapsedTime;
-                    const x = currentDuration / animationDuration;
-                    const animatedSpeed = 1 - (1 - x) * (1 - x);
-                    const newLocation = -animatingDistance * animatedSpeed + startingDistance;
-                    totalScroll = newLocation - scrollingContainerComponent.scrollY;
-                    wheelEvents.push(animatingDistance);
+                    totalScroll = newLocation;
+                    wheelEvents.push(100);
                 }
             }
 

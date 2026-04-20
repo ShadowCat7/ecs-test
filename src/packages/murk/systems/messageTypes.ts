@@ -6,6 +6,11 @@ export type ContainerAddMessage = Message & {
     entityId: string,
 };
 
+export type ContainerAddAnimatedMessage = Message & {
+    type: 'containerAddAnimated',
+    containerId: string,
+};
+
 export type ContainerDeleteChildrenMessage = Message & {
     type: 'containerDeleteChildren',
     containerId: string,
