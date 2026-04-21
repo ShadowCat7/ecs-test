@@ -1,9 +1,8 @@
-import { loadInk, updateVars } from "../../ink/ink.js";
+import { loadInk } from "../../ink/ink.js";
 import { addEntity } from "../../sanguine/entities/entities.js";
-import { assertMessage } from "../../sanguine/messages.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { createTrigger } from "../../sanguine/system.js";
-import { Component, ControlMessage, Message, System } from "../../sanguine/types.js";
+import { Component, Message, System } from "../../sanguine/types.js";
 import { createControlTrigger, getFreshPress } from "../controls.js";
 import { ContainerAddAnimatedMessage, ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
 import { StoryEndMessage, StoryStartMessage } from "./types.js";
@@ -67,7 +66,7 @@ export const storySystem = (
 
     return {
         triggers: [
-            createControlTrigger('next', (message: ControlMessage) => {
+            createControlTrigger('next', (message) => {
                 if (!disabled && message.current && !message.previous) {
                     if (story) next();
                 }

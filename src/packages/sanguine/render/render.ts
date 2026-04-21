@@ -8,8 +8,15 @@ import { assertUnreachable } from "../util/exhaustiveSwitch.js";
 import { drawCircle, drawCircleOutline } from "../draw/drawCircle.js";
 import { drawGrid } from "../draw/drawGrid.js";
 import { CameraComponent } from "../../castle/components/cameraComponent.js";
+import { max } from "../util/array.js";
 
-export const getSize = (renderItem: Render) => {
+export const getSize = (renderItem: Render | Render[]): { width: number, height: number; } => {
+    if (Array.isArray(renderItem)) {
+        const sizes = renderItem.map(x => getSize(x));
+        const [width, height] = max(sizes, [x => x.width, x => x.height]);
+        return { width, height };
+    }
+
     const { type } = renderItem;
     switch (type) {
         case "rectangle":

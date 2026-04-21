@@ -1,16 +1,16 @@
-import { createScene } from "../../sanguine/scene.js";
 import { changeScene, resetScene } from "../../sanguine/sceneManager.js";
-import { Entity } from "../../sanguine/types.js";
 import { assertUnreachable } from "../../sanguine/util/exhaustiveSwitch.js";
-import { cameraSystem } from "../systems/cameraSystem.js";
-import { roomPlaySystems } from "../systems/gameplaySystems/roomPlaySystems.js";
-import { globalSystems } from "../systems/globalSystems.js";
 import { SceneType } from "../types.js";
+import { designerScene } from "./designerScene.js";
+import { roomPlayScene } from "./roomPlayScene.js";
 
 const getScene = (sceneType: SceneType) => {
+    console.log(sceneType);
     switch (sceneType) {
-        case "test":
-            return (x: Entity[]) => createScene(x, ...roomPlaySystems(), ...globalSystems(), cameraSystem);
+        case 'test':
+            return roomPlayScene;
+        case 'designer':
+            return designerScene;
         default:
             return assertUnreachable(sceneType);
     }

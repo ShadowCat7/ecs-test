@@ -1,13 +1,13 @@
-import { addEntity, getComponents, getEntity, getEntityQuadtree } from "../../sanguine/entities/entities.js";
-import { distance } from "../../sanguine/physics/distance.js";
-import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
-import { getSize } from "../../sanguine/render/render.js";
-import { Circle, Render, Text } from "../../sanguine/render/types.js";
-import { Component, ControlMessage, Entity, Message, System } from "../../sanguine/types.js";
-import { ConversationComponent } from "../components/conversationComponent.js";
-import { PlayerComponent } from "../components/playerComponent.js";
-import { createControlTrigger, getKeyForControl } from "../controls.js";
-import { StoryEndMessage, StoryStartMessage } from "./types.js";
+import { addEntity, getComponents, getEntity, getEntityQuadtree } from "../../../sanguine/entities/entities.js";
+import { distance } from "../../../sanguine/physics/distance.js";
+import { getPrefab } from "../../../sanguine/prefabs/prefabs.js";
+import { getSize } from "../../../sanguine/render/render.js";
+import { Circle, Render, Text } from "../../../sanguine/render/types.js";
+import { Component, ControlMessage, Entity, Message, System } from "../../../sanguine/types.js";
+import { ConversationComponent } from "../../components/conversationComponent.js";
+import { PlayerComponent } from "../../components/playerComponent.js";
+import { createControlTrigger, getKeyForControl } from "../../controls.js";
+import { StoryEndMessage, StoryStartMessage } from "../types.js";
 
 export const interactSystem = (
     messager: (message: Message) => void,

@@ -25,3 +25,20 @@ export const groupMap = <T extends {}>(array: T[], getKey: (element: T) => strin
 
     return map;
 };
+
+export const max = <T extends {}>(array: T[], maxFuncs: ((element: T) => number)[]) => {
+    let maxes: number[] = [];
+    for (let i = 0; i < array.length; i++) {
+        const element = array[i];
+        if (!i) {
+            maxes = maxFuncs.map(x => x(element));
+            continue;
+        }
+        for (const maxFunc of maxFuncs) {
+            const value = maxFunc(element);
+            if (value > maxes[i]) maxes[i] = value;
+        }
+    }
+
+    return maxes;
+};

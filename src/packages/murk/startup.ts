@@ -1,20 +1,19 @@
-import { loadInk } from "../ink/ink.js";
-import { drawGrid } from "../sanguine/draw/drawGrid.js";
 import { createGame } from "../sanguine/game.js";
 import { getCurrentScene } from "../sanguine/sceneManager.js";
-import { GRID_SIZE } from "./constants/game.js";
+import { getFreshPress } from "./controls.js";
 import { changeSceneType } from "./scenes/sceneHandler.js";
 
 export const startup = async (canvas: HTMLCanvasElement) => {
     const draw = (ctx: CanvasRenderingContext2D) => {
-        const { width: canvasWidth, height: canvasHeight } = canvas;
-        // if (getControl('map').current)
-        // drawGrid(ctx, 0, 0, canvasWidth, canvasHeight, GRID_SIZE);
-
         getCurrentScene()?.draw(ctx);
     };
 
     const update = (elapsedTime: number) => {
+        if (getFreshPress('toggleDesigner')) {
+            const type = getCurrentScene()?.getType() === 'designer' ? 'test' : 'designer';
+            changeSceneType(type);
+        }
+
         getCurrentScene()?.update(elapsedTime);
     };
 

@@ -1,1 +1,1 @@
-export type SceneType = 'test';
+export type SceneType = 'test' | 'designer';

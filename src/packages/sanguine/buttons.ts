@@ -70,6 +70,11 @@ export const raiseWheelEvent = (delta: number) => {
     });
 };
 
+export const unsubscribe = () => {
+    controlEventHandlers.length = 0;
+    wheelEventHandlers.length = 0;
+};
+
 export const updateControls = (buttonsPressed: { [button: string]: boolean; }, mouse: Mouse) => {
     for (let button in buttonsPressed) {
         handleControl(controlButtonMap, button, buttonsPressed[button]);

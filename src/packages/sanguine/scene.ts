@@ -23,7 +23,7 @@ const renderPrefab = (prefab: Prefab, entity: Entity) => {
 
 export type Scene = ReturnType<typeof createScene>;
 
-export const createScene = (initialEntities: Entity[], ...systemCreators: ((messager: (message: Message) => void) => System)[]) => {
+export const createScene = (type: string, initialEntities: Entity[], ...systemCreators: ((messager: (message: Message) => void) => System)[]) => {
     let mailbox: Mailbox = {};
 
     const messageSender = (message: Message) => sendMail(message, mailbox);
@@ -46,6 +46,7 @@ export const createScene = (initialEntities: Entity[], ...systemCreators: ((mess
     addEntities(initialEntities);
 
     return {
+        getType: () => type,
         draw: (ctx: CanvasRenderingContext2D) => {
             setupRender(ctx);
 

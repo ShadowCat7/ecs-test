@@ -3,15 +3,27 @@ Build dialogue
     if not fully scrolled and then next, scroll to bottom
     make container system work with multiple containers existing
 
+Physics
+    add lines that circles can't go through
+
+Designer
+    add designer tool
+
 infra:
-don't duplicate renders but keep track of state elsewhere
-    aka separate prefab data with entity state
+    handle button mappings with key: Control[]
+    store button mappings in file (keep default in code)
+    remap button mappings
+    don't duplicate renders but keep track of state elsewhere
+        aka separate prefab data with entity state
+
+story notes:
+    make choices feel unique to the player
+    help the player feel related to the world
+    make the player's actions matter
 
 castle:
 problems:
     only handle messages for certain component types?
-    variable text
-    on animation end, fire event
 
 features:
     move bouncing to general location

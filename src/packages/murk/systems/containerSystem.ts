@@ -50,7 +50,7 @@ export const containerSystem = (
                 const textRender = entity.renders?.find(x => x.type === 'text') as Text;
                 const textSize = measureText(textRender.text, 0, 0, { maxWidth: textRender.maxWidth });
                 const rect: Rectangle = {
-                    color: 'grey',
+                    color: 'dimgray',
                     height: textSize.height + messagePadding / 4,
                     width: textSize.width + messagePadding / 4,
                     type: 'rectangle',

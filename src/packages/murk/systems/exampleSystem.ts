@@ -1,6 +1,6 @@
 import { Component, Message, System } from "../../sanguine/types.js";
 
-export const gridSystem = (
+export const exampleSystem = (
     messager: (message: Message) => void,
 ): System => {
     // initialization logic here
@@ -19,4 +19,4 @@ export const gridSystem = (
             }
         },
     };
-}
+};

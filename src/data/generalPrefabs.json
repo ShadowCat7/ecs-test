@@ -94,5 +94,30 @@
                 "color": "yellow"
             }
         ]
+    },
+    {
+        "type": "inkpadPanel",
+        "components": [
+            {
+                "type": "designer/panel",
+                "control": "prefabs"
+            }
+        ]
+    },
+    {
+        "type": "inkpad",
+        "components": [
+            {
+                "type": "designer/inkpad"
+            }
+        ]
+    },
+    {
+        "type": "stamp",
+        "components": [
+            {
+                "type": "designer/stamp"
+            }
+        ]
     }
 ]

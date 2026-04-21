@@ -9,15 +9,15 @@ import { SceneType } from "../types.js";
 const getScene = (sceneType: SceneType) => {
     switch (sceneType) {
         case "test":
-            return (x: Entity[]) => createScene(x, ...roomPlaySystems(), cameraSystem);
+            return (x: Entity[]) => createScene('test', x, ...roomPlaySystems(), cameraSystem);
         default:
             return assertUnreachable(sceneType);
     }
-}
+};
 
 export const changeSceneType = (sceneType: SceneType) => {
     resetScene();
     const sceneCreator = getScene(sceneType);
     const scene = sceneCreator([]);
     changeScene(scene);
-}
+};
