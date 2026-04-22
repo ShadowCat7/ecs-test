@@ -80,6 +80,7 @@ export const inkpadSystem = (
 
             for (const component of components as StampComponent[]) {
                 const entity = getEntity(component.entityId);
+                if (!entity.visible) continue;
                 if (!entity.renders?.length) continue;
                 const clicked = isPointInRender(mouseX, mouseY, entity.renders, entity.x, entity.y);
                 if (clicked) {

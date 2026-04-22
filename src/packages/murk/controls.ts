@@ -11,7 +11,7 @@ export type Control = 'toggleDesigner'
     | 'select' | 'map' | 'next' | 'interact' | 'escape'
     | 'left' | 'right' | 'up' | 'down'
     | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0'
-    | 'saveDesign' | 'delete' | 'prefabs';
+    | 'saveDesign' | 'delete' | 'prefabs' | 'properties';
 
 type ButtonMap = { [key: string]: Control; };
 
@@ -48,7 +48,8 @@ const roomPlayButtonMap: ButtonMap = {
 const designerButtonMap: ButtonMap = {
     'RightClick': 'delete',
     'Space': 'prefabs',
-    'KeyP': 'saveDesign',
+    'KeyZ': 'saveDesign',
+    'KeyP': 'properties',
 };
 
 // TODO mappings will need to be arrays

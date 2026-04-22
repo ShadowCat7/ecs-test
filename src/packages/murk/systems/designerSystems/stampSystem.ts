@@ -8,7 +8,7 @@ import { createTrigger } from "../../../sanguine/system.js";
 import { Component, Message, System } from "../../../sanguine/types.js";
 import { StampComponent } from "../../components/designer/stampComponent.js";
 import { createControlTrigger, getControl } from "../../controls.js";
-import { CreateStampMessage, PlaceStampMessage } from "./types.js";
+import { AddPropertiesMessage, CreateStampMessage, OpenPanelMessage, PlaceStampMessage } from "./types.js";
 
 export const stampSystem = (
     messager: (message: Message) => void,
@@ -17,7 +17,6 @@ export const stampSystem = (
 
     const createStamp = (x: number, y: number, prefab: string, carried: boolean = false) => {
         const stamp = stampPrefab.createEntity(x, y);
-        console.log(prefab, x, y);
         const targetFab = getPrefab(prefab);
         stamp.renders = copyRenders(targetFab.shapes) ?? [];
 
@@ -45,7 +44,7 @@ export const stampSystem = (
                 if (!message.current || message.previous) return;
                 console.log('saving...');
                 const stamps = getComponents<StampComponent>('stamp') ?? [];
-                const data = stamps.map(s => {
+                const data = stamps.filter(x => !x.carried).map(s => {
                     const { x, y, components } = getEntity(s.entityId);
                     return {
                         x,
@@ -55,38 +54,42 @@ export const stampSystem = (
                     };
                 });
                 localStorage.setItem('CURRENT_LEVEL', JSON.stringify(data));
+                console.log('saved');
             }),
         ],
         componentType: 'stamp',
         process: (components: Component[], elapsedTime: number) => {
             const deleteControl = getControl('delete');
+            const select = getControl('select');
 
-            for (const component of components as StampComponent[]) {
-                const { carried } = component;
-                if (carried) {
-                    const [mouseX, mouseY] = getMousePosition();
-                    const entity = getEntity(component.entityId);
+            const carriedComponent = (components as StampComponent[]).find(x => x.carried);
+            if (carriedComponent) {
+                const [mouseX, mouseY] = getMousePosition();
+                const entity = getEntity(carriedComponent.entityId);
 
-                    const camera = getCamera();
-                    entity.x = mouseX + camera.x;
-                    entity.y = mouseY + camera.y;
+                const camera = getCamera();
+                entity.x = mouseX + camera.x;
+                entity.y = mouseY + camera.y;
 
-                    const leftClick = getControl('select');
-
-                    if (deleteControl.current && !deleteControl.previous) {
-                        return;
-                    }
-
-                    if (leftClick.current && !leftClick.previous) {
-                        component.carried = undefined;
-                        const message: PlaceStampMessage = {
-                            type: 'placeStamp',
-                        };
-                        messager(message);
-                    }
+                if (deleteControl.current && !deleteControl.previous) {
+                    removeEntity(entity.id);
+                    return;
                 }
 
-                if (!deleteControl.current) continue;
+                if (select.current && !select.previous) {
+                    carriedComponent.carried = undefined;
+                    const message: PlaceStampMessage = {
+                        type: 'placeStamp',
+                    };
+                    messager(message);
+                    return;
+                }
+            }
+
+            if ((!deleteControl.current || deleteControl.previous) && (!select.current || select.previous)) return;
+
+            for (const component of components as StampComponent[]) {
+                if (component.carried) continue;
 
                 const [mouseX, mouseY] = getMousePosition();
 
@@ -94,8 +97,20 @@ export const stampSystem = (
                 if (!entity.renders?.length) continue;
                 const camera = getCamera();
                 const hovered = isPointInRender(mouseX, mouseY, entity.renders, entity.x - camera.x, entity.y - camera.y);
-                if (hovered) {
+                if (hovered && deleteControl.current && !deleteControl.previous) {
                     removeEntity(entity.id);
+                } else if (hovered && select.current && !select.previous) {
+                    console.log('open')
+                    const openPanel: OpenPanelMessage = {
+                        type: 'openPanel',
+                        panelControl: 'properties',
+                    };
+                    messager(openPanel);
+                    const addProperties: AddPropertiesMessage = {
+                        type: 'addProperties',
+                        prefab: component.prefab,
+                    };
+                    messager(addProperties);
                 }
             }
         },

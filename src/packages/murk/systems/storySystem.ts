@@ -1,5 +1,6 @@
 import { loadInk } from "../../ink/ink.js";
 import { addEntity } from "../../sanguine/entities/entities.js";
+import { showEntity } from "../../sanguine/entities/entity.js";
 import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { createTrigger } from "../../sanguine/system.js";
 import { Component, Message, System } from "../../sanguine/types.js";
@@ -76,7 +77,7 @@ export const storySystem = (
                     disabled = false;
             }),
             createTrigger('storyStart', async (message: StoryStartMessage) => {
-                dialogue.visible = true;
+                showEntity(dialogue, true);
                 currentStoryName = message.name;
                 story = await loadInk(`./data/inks/${currentStoryName}.json`, {
                     variables: {
@@ -86,7 +87,7 @@ export const storySystem = (
                 next();
             }),
             createTrigger('storyEnd', (_: StoryEndMessage) => {
-                dialogue.visible = false;
+                showEntity(dialogue, false);
                 currentStoryName = null;
                 story = null;
                 const message: ContainerDeleteChildrenMessage = {

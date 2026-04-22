@@ -127,6 +127,16 @@
         ]
     },
     {
+        "type": "propertiesPanel",
+        "components": [
+            {
+                "type": "designer/panel",
+                "control": "properties",
+                "open": false
+            }
+        ]
+    },
+    {
         "type": "inkpad",
         "components": [
             {
