@@ -12,7 +12,7 @@ export type PanelComponent = StateComponent<PanelData, PanelState>;
 
 export const PanelComponent = (data?: Partial<PanelData>, state?: Partial<PanelState>): PanelComponent => {
     return {
-        open: false,
+        open: true,
         control: '',
         ...data,
         ...state,

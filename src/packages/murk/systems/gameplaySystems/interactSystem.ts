@@ -13,10 +13,10 @@ export const interactSystem = (
     messager: (message: Message) => void,
 ): System => {
     const convoPrefab = getPrefab('conversation');
-    const convoCharacter1 = convoPrefab.createEntity(300, 300);
+    const convoCharacter1 = convoPrefab.createEntity(600, 600);
     addEntity(convoCharacter1);
 
-    const convoCharacter2 = convoPrefab.createEntity(400, 300);
+    const convoCharacter2 = convoPrefab.createEntity(700, 600);
     addEntity(convoCharacter2);
 
     const playerComponent = getComponents<PlayerComponent>('player')?.at(0);

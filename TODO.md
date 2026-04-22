@@ -1,6 +1,9 @@
 murk:
+z sanity
+
 Build dialogue
     if not fully scrolled and then next, scroll to bottom
+    make containers take more than just text
     make container system work with multiple containers existing
 
 Physics
@@ -11,6 +14,7 @@ Designer
 
 infra:
     handle button mappings with key: Control[]
+    handle simultaneious keys?
     store button mappings in file (keep default in code)
     remap button mappings
     don't duplicate renders but keep track of state elsewhere

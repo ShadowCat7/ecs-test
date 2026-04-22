@@ -1,15 +1,19 @@
 import { getMousePosition } from "../../../sanguine/buttons.js";
 import { addEntity, getEntity } from "../../../sanguine/entities/entities.js";
+import { copyRenders } from "../../../sanguine/entities/entity.js";
 import { isPointInRender } from "../../../sanguine/physics/intersection.js";
 import { getPrefab } from "../../../sanguine/prefabs/prefabs.js";
-import { Rectangle } from "../../../sanguine/render/types.js";
+import { getSize } from "../../../sanguine/render/render.js";
+import { Rectangle, Text } from "../../../sanguine/render/types.js";
 import { getScreenSize } from "../../../sanguine/screen.js";
 import { createTrigger } from "../../../sanguine/system.js";
 import { Component, Entity, Message, System } from "../../../sanguine/types.js";
 import { InkpadComponent } from "../../components/designer/inkpadComponent.js";
 import { StampComponent } from "../../components/designer/stampComponent.js";
-import { getControl } from "../../controls.js";
+import { createControlTrigger, getControl } from "../../controls.js";
 import { CreateStampMessage, PlaceStampMessage } from "./types.js";
+
+const prefabs = ['player', 'wall'];
 
 export const inkpadSystem = (
     messager: (message: Message) => void,
@@ -26,11 +30,39 @@ export const inkpadSystem = (
         type: 'rectangle',
         x: 0,
         y: 0,
-        z: 1,
+        z: 10,
         overlay: true,
     };
     panel.renders.push(rectangle);
     addEntity(panel);
+
+    let y = 50;
+
+    for (const prefabName of prefabs) {
+        const entity = getPrefab('inkpad').createEntity(50, y);
+        const inkpad = entity.getComponent<InkpadComponent>('inkpad')!;
+        inkpad.prefab = prefabName;
+        const prefab = getPrefab(prefabName);
+        entity.renders = copyRenders(prefab.shapes) ?? [];
+        const { width, height } = getSize(entity.renders);
+        const text: Text = {
+            type: 'text',
+            text: prefabName,
+            x: width + 20,
+            y: 0,
+            z: 2,
+            yAlign: 0,
+            color: 'white',
+        };
+        entity.renders.push(text);
+        for (const render of entity.renders) {
+            render.overlay = true;
+            render.z = 2;
+        }
+        y += height + 20;
+        addEntity(entity);
+        panel.children.push(entity);
+    }
 
     return {
         triggers: [

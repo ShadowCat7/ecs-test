@@ -1,21 +1,30 @@
-import { addEntity } from "../../../sanguine/entities/entities.js";
+import { addEntity, getComponents, getEntity } from "../../../sanguine/entities/entities.js";
 import { Component, Message, System } from "../../../sanguine/types.js";
 import { getPrefab } from "../../../sanguine/prefabs/prefabs.js";
 import { PhysicsComponent } from "../../components/physicsComponent.js";
 import { getControl } from "../../controls.js";
 import { setMagnitude } from "../../../sanguine/util/vector.js";
 import { PlayerComponent } from "../../components/playerComponent.js";
+import { load } from "../../../sanguine/save.js";
 
 export const playerMovementSystem = (
     messager: (message: Message) => void,
 ): System => {
+    load().map(e => {
+        addEntity(e);
+    });
+
+    const playerComponent = getComponents<PlayerComponent>('player')![0];
+    if (!playerComponent) throw new Error('No player component!');
+    const player = getEntity(playerComponent.entityId);
+
     // create player
-    const player = getPrefab('head').createEntity(300, 300);
-    const playerComponent = player.getComponent<PlayerComponent>('player')!;
-    const physics = player.getComponent<PhysicsComponent>('physics')!;
-    physics.velocityX = 0;
-    physics.velocityY = physics.topSpeed;
-    addEntity(player);
+    // const player = getPrefab('player').createEntity(300, 300);
+    // const playerComponent = player.getComponent<PlayerComponent>('player')!;
+    // const physics = player.getComponent<PhysicsComponent>('physics')!;
+    // physics.velocityX = 0;
+    // physics.velocityY = physics.topSpeed;
+    // addEntity(player);
 
     return {
         triggers: [],

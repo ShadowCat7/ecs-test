@@ -92,13 +92,14 @@ export const createEngine = (canvas: HTMLCanvasElement, updateFunc: UpdateFunc, 
     });
 
     document.addEventListener('keydown', (e) => {
-        e.stopPropagation();
+        if (e.code === 'KeyR' && e.ctrlKey || e.code === 'F5') location.reload();
 
-        if (!(buttonsPressed['KeyR'] && buttonsPressed['ControlLeft'] ||
+        if (!(
             buttonsPressed['Tab'] && buttonsPressed['AltLeft'] ||
             buttonsPressed['F5'] || buttonsPressed['F12'])
         ) {
             e.preventDefault();
+            e.stopPropagation();
         }
 
         if (e.repeat) return;

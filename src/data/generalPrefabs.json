@@ -10,6 +10,28 @@
         "renders": []
     },
     {
+        "type": "wall",
+        "components": [
+            {
+                "type": "physics"
+            },
+            {
+                "type": "collideable",
+                "radius": 12
+            }
+        ],
+        "renders": [
+            {
+                "type": "circle",
+                "color": "white",
+                "x": 0,
+                "y": 0,
+                "z": 2,
+                "radius": 12
+            }
+        ]
+    },
+    {
         "type": "dialogueItem",
         "components": [],
         "renders": [
@@ -70,7 +92,7 @@
         ]
     },
     {
-        "type": "head",
+        "type": "player",
         "components": [
             {
                 "type": "player"

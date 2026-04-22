@@ -9,6 +9,16 @@ export const repeat = (count: number, func: () => void) => {
     }
 };
 
+export const createMap = <T extends {}>(array: T[], getKey: (element: T) => string) => {
+    const map = new Map<string, T>();
+
+    for (let element of array) {
+        map.set(getKey(element), element);
+    }
+
+    return map;
+};
+
 export const groupMap = <T extends {}>(array: T[], getKey: (element: T) => string) => {
     const map = new Map<string, T[]>();
 

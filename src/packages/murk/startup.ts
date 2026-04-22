@@ -23,5 +23,5 @@ export const startup = async (canvas: HTMLCanvasElement) => {
 
     await createGame(canvas, prefabLocations, 'murk/components', update, draw);
 
-    changeSceneType('test');
+    changeSceneType('designer');
 };
