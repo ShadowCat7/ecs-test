@@ -1,5 +1,51 @@
 [
     {
+        "type": "text",
+        "components": [],
+        "renders": [
+            {
+                "type": "text",
+                "text": "",
+                "color": "white",
+                "overlay": true,
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "maxWidth": 700
+            }
+        ]
+    },
+    {
+        "type": "textbox",
+        "components": [
+            {
+                "type": "designer/textbox"
+            }
+        ],
+        "renders": [
+            {
+                "type": "rectangle",
+                "color": "white",
+                "overlay": true,
+                "width": 400,
+                "height": 40,
+                "x": 0,
+                "y": 0,
+                "z": 2
+            },
+            {
+                "type": "text",
+                "text": "",
+                "color": "black",
+                "overlay": true,
+                "x": 5,
+                "y": 5,
+                "z": 1,
+                "maxWidth": 400
+            }
+        ]
+    },
+    {
         "type": "dialogue",
         "components": [
             {
@@ -136,6 +182,9 @@
                 "type": "designer/panel",
                 "control": "properties",
                 "open": false
+            },
+            {
+                "type": "ui/container"
             }
         ]
     },
