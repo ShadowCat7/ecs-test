@@ -1,4 +1,4 @@
-import { Entity, Message } from "../../sanguine/types.js";
+import { Message } from "../../sanguine/types.js";
 
 export type ContainerAddMessage = Message & {
     type: 'containerAdd',
@@ -6,9 +6,10 @@ export type ContainerAddMessage = Message & {
     entityId: string,
 };
 
-export type ContainerAddAnimatedMessage = Message & {
-    type: 'containerAddAnimated',
+export type ContainerScrollMessage = Message & {
+    type: 'containerScroll',
     containerId: string,
+    scroll: number,
 };
 
 export type ContainerDeleteChildrenMessage = Message & {

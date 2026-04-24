@@ -1,34 +1,27 @@
 import { getMousePosition } from "../../sanguine/buttons.js";
-import { measureText } from "../../sanguine/draw/drawText.js";
 import { getEntity, removeEntity } from "../../sanguine/entities/entities.js";
-import { Rectangle, Text } from "../../sanguine/render/types.js";
+import { getSize } from "../../sanguine/render/render.js";
 import { getScreenSize } from "../../sanguine/screen.js";
 import { createTrigger } from "../../sanguine/system.js";
 import { Component, Entity, Message, System, WheelMessage } from "../../sanguine/types.js";
 import { sum } from "../../sanguine/util/array.js";
-import { beginInterpolate, quadraticOut } from "../../sanguine/util/interpolation.js";
 import { clamp } from "../../sanguine/util/number.js";
 import { ContainerComponent } from "../components/ui/containerComponent.js";
-import { ContainerAddAnimatedMessage, ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
+import { ContainerAddMessage, ContainerDeleteChildrenMessage, ContainerScrollMessage } from "./messageTypes.js";
 
 const getContainerSize = (container: Entity) => {
     const firstChild = container.children[0];
     if (!firstChild) return 0;
     const lastChild = container.children[container.children.length - 1];
-    const textRender = lastChild.renders?.find(x => x.type === 'text') as Text;
-    return (lastChild.y - firstChild.y) + measureText(textRender.text, lastChild.x, lastChild.y, { maxWidth: textRender.maxWidth }).height;
+    const lastChildSize = getSize(lastChild.renders ?? []);
+    console.log(lastChildSize);
+    return (lastChild.y - firstChild.y) + lastChildSize.height;
 };
-
-const DEFAULT_ANIMATING_DURATION = 0.4;
 
 export const containerSystem = (
     messager: (message: Message) => void,
 ): System => {
     const wheelEvents: number[] = [];
-    let maxScrolled = false;
-    let animating = false;
-    let currentInterp = beginInterpolate(0, 0, quadraticOut);
-
     const messagePadding = 40;
 
     return {
@@ -40,40 +33,19 @@ export const containerSystem = (
                 if (!containerComponent) throw new Error('Container is not a container');
 
                 const containerSize = getContainerSize(container);
+                console.log(containerSize);
                 const lastY = containerSize + containerComponent.scrollY;
 
                 const entity = getEntity(entityId);
+                if (!entity.renders) entity.renders = [];
                 entity.y = lastY + messagePadding;
                 if (entity.y === messagePadding) entity.y -= messagePadding - 20;
                 container.children.push(entity);
-
-                const textRender = entity.renders?.find(x => x.type === 'text') as Text;
-                const textSize = measureText(textRender.text, 0, 0, { maxWidth: textRender.maxWidth });
-                const rect: Rectangle = {
-                    color: 'dimgray',
-                    height: textSize.height + messagePadding / 4,
-                    width: textSize.width + messagePadding / 4,
-                    type: 'rectangle',
-                    x: -messagePadding / 8,
-                    y: -messagePadding / 8,
-                    z: textRender.z - 1,
-                    overlay: true,
-                };
-                entity.renders?.push(rect);
-
-                const [_, screenHeight] = getScreenSize();
-                if ((containerSize < screenHeight - 20 || maxScrolled) && entity.y - containerComponent.scrollY + textSize.height > screenHeight - 20) {
-                    animating = true;
-                    const animatingDistance = -textSize.height - messagePadding;
-                    currentInterp = beginInterpolate(animatingDistance, DEFAULT_ANIMATING_DURATION, quadraticOut);
-                    wheelEvents.push(animatingDistance);
-                } else {
-                    const message: ContainerAddAnimatedMessage = {
-                        type: 'containerAddAnimated',
-                        containerId: containerId,
-                    };
-                    messager(message);
-                }
+            }),
+            createTrigger<ContainerScrollMessage>('containerScroll', (message) => {
+                const { containerId, scroll } = message;
+                // TODO capture current containerId
+                wheelEvents.push(scroll);
             }),
             createTrigger<ContainerDeleteChildrenMessage>('containerDeleteChildren', (message) => {
                 const { containerId } = message;
@@ -87,10 +59,6 @@ export const containerSystem = (
                 containerComponent.scrollY = 0;
             }),
             createTrigger<WheelMessage>('wheel', ({ delta }) => {
-                if (animating) {
-                    animating = false;
-                    wheelEvents.length = 0;
-                }
                 wheelEvents.push(-delta);
             }),
         ],
@@ -114,22 +82,6 @@ export const containerSystem = (
             let totalScroll = sum(wheelEvents, x => x);
             wheelEvents.length = 0;
 
-            if (animating) {
-                const newLocation = currentInterp(elapsedTime);
-                if (newLocation === undefined) {
-                    const message: ContainerAddAnimatedMessage = {
-                        type: 'containerAddAnimated',
-                        containerId: scrollingContainerComponent.entityId,
-                    };
-                    messager(message);
-                    totalScroll = -100;
-                    animating = false;
-                } else {
-                    totalScroll = newLocation;
-                    wheelEvents.push(100);
-                }
-            }
-
             const [_, screenHeight] = getScreenSize();
             const container = getEntity(scrollingContainerComponent.entityId);
             const containerHeight = getContainerSize(container);
@@ -139,8 +91,6 @@ export const containerSystem = (
             scrollingContainerComponent.scrollY += totalScroll;
 
             scrollingContainerComponent.scrollY = clamp(scrollingContainerComponent.scrollY, 0, lowest);
-
-            maxScrolled = scrollingContainerComponent.scrollY === lowest;
 
             for (const child of container.children) {
                 child.y = child.y - oldPrevious + scrollingContainerComponent.scrollY;

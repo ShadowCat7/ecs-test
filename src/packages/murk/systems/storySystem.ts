@@ -1,11 +1,8 @@
 import { loadInk } from "../../ink/ink.js";
-import { addEntity } from "../../sanguine/entities/entities.js";
-import { showEntity } from "../../sanguine/entities/entity.js";
-import { getPrefab } from "../../sanguine/prefabs/prefabs.js";
 import { createTrigger } from "../../sanguine/system.js";
 import { Component, Message, System } from "../../sanguine/types.js";
 import { createControlTrigger, getFreshPress } from "../controls.js";
-import { ContainerAddAnimatedMessage, ContainerAddMessage, ContainerDeleteChildrenMessage } from "./messageTypes.js";
+import { DialogueAddMessage, DialogueReadyMessage } from "./gameplaySystems/types.js";
 import { StoryEndMessage, StoryStartMessage } from "./types.js";
 
 const getText = (text: string) => {
@@ -20,25 +17,12 @@ export const storySystem = (
     let money = 0;
     let disabled = false;
 
-    const dialogue = getPrefab('dialogue').createEntity(0, 0);
-    addEntity(dialogue);
-
-    const dialogueItemFab = getPrefab('dialogueItem');
-    let dialogueItem = dialogueItemFab.createEntity(0, 0);
-    let text = dialogueItem.renders?.find(x => x.type === 'text')!;
-    if (!text) throw new Error('"dialogue" is missing render of type `text`.');
-
     const addBubble = (newText: string) => {
-        dialogueItem = dialogueItemFab.createEntity(20, 0);
-        text = dialogueItem.renders?.find(x => x.type === 'text')!;
-        text.text = newText;
-        addEntity(dialogueItem);
-        const message: ContainerAddMessage = {
-            type: 'containerAdd',
-            entityId: dialogueItem.id,
-            containerId: dialogue.id,
-        };
         disabled = true;
+        const message: DialogueAddMessage = {
+            type: 'dialogueAdd',
+            text: newText,
+        };
         messager(message);
     };
     const getChoices = (choices: { index: number, text: string; }[]) => {
@@ -72,12 +56,10 @@ export const storySystem = (
                     if (story) next();
                 }
             }),
-            createTrigger('containerAddAnimated', (message: ContainerAddAnimatedMessage) => {
-                if (message.containerId === dialogue.id)
-                    disabled = false;
+            createTrigger<DialogueReadyMessage>('dialogueReady', (message) => {
+                disabled = false;
             }),
-            createTrigger('storyStart', async (message: StoryStartMessage) => {
-                showEntity(dialogue, true);
+            createTrigger<StoryStartMessage>('storyStart', async (message) => {
                 currentStoryName = message.name;
                 story = await loadInk(`./data/inks/${currentStoryName}.json`, {
                     variables: {
@@ -86,22 +68,16 @@ export const storySystem = (
                 });
                 next();
             }),
-            createTrigger('storyEnd', (_: StoryEndMessage) => {
-                showEntity(dialogue, false);
+            createTrigger<StoryEndMessage>('storyEnd', (_) => {
                 currentStoryName = null;
                 story = null;
-                const message: ContainerDeleteChildrenMessage = {
-                    type: 'containerDeleteChildren',
-                    containerId: dialogue.id,
-                };
-                messager(message);
             })
         ],
         componentType: 'example',
         process: (components: Component[], elapsedTime: number) => {
             if (!story) return;
 
-            for (let i = 1; i < 9; i++) {
+            for (let i = 1; i < 10; i++) {
                 if (getFreshPress(i.toString() as any)) {
                     choose(i - 1);
                 }

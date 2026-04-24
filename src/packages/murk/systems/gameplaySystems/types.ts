@@ -8,35 +8,11 @@ export type CollisionMessage = Message & {
     timeAfterCollision: number,
 };
 
-export type PlayerEatMessage = Message & {
-    type: 'playerEat',
-    amount: number,
+export type DialogueAddMessage = Message & {
+    type: 'dialogueAdd',
+    text: string,
 };
 
-export type PlayerEatenMessage = Message & {
-    type: 'playerEaten',
-    eaten: Entity,
-};
-
-export type PlayerBouncedMessage = Message & {
-    type: 'playerBounced',
-    eater: Entity,
-    timeOfCollision: number,
-    timeAfterCollision: number,
-    collisionPoint: [number, number],
-};
-
-export type LevelUpMessage = Message & {
-    type: 'levelUp',
-    level: number,
-};
-
-export type LevelDownMessage = Message & {
-    type: 'levelDown',
-    level: number,
-};
-
-export type ZoomMessage = Message & {
-    type: 'zoom',
-    amount: number,
+export type DialogueReadyMessage = Message & {
+    type: 'dialogueReady',
 };

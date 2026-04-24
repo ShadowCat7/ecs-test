@@ -7,7 +7,6 @@ import { setMagnitude } from "../../sanguine/util/vector.js";
 import { CameraComponent } from "../components/cameraComponent.js";
 import { PhysicsComponent } from "../components/physicsComponent.js";
 import { PlayerComponent } from "../components/playerComponent.js";
-import { ZoomMessage } from "./gameplaySystems/types.js";
 
 export const cameraSystem = (
     messager: (message: Message) => void,

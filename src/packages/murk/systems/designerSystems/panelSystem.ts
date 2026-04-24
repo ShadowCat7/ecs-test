@@ -6,7 +6,7 @@ import { PanelComponent } from "../../components/designer/panelComponent.js";
 import { getControl } from "../../controls.js";
 import { ClearPanelMessage, OpenPanelMessage } from "./types.js";
 
-export const togglePanel = (panel: PanelComponent, force: boolean) => {
+export const togglePanel = (panel: PanelComponent, force?: boolean) => {
     panel.open = force ?? !panel.open;
     const entity = getEntity(panel.entityId);
     showEntity(entity, panel.open);

@@ -13,7 +13,8 @@ import { max } from "../util/array.js";
 export const getSize = (renderItem: Render | Render[]): { width: number, height: number; } => {
     if (Array.isArray(renderItem)) {
         const sizes = renderItem.map(x => getSize(x));
-        const [width, height] = max(sizes, [x => x.width, x => x.height]);
+        const width = max(sizes, x => x.width) ?? 0;
+        const height = max(sizes, x => x.height) ?? 0;
         return { width, height };
     }
 
@@ -24,7 +25,7 @@ export const getSize = (renderItem: Render | Render[]): { width: number, height:
         case "circle":
             return { width: renderItem.radius * 2, height: renderItem.radius * 2 };
         case "text":
-            throw new Error('Not implemented');
+            return measureText(renderItem.text, renderItem.x, renderItem.y, { maxWidth: renderItem.maxWidth });
         case "grid":
             throw new Error('Not implemented');
         default:

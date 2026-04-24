@@ -5,6 +5,9 @@
             {
                 "type": "ui/container",
                 "scroll": true
+            },
+            {
+                "type": "dialogue"
             }
         ],
         "renders": []
