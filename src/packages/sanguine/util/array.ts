@@ -45,3 +45,8 @@ export const max = <T extends {}>(array: T[], getValue: (element: T) => number) 
     }
     return max;
 };
+
+export const extendArray = <T>(array: T[], newLength: number, defaultValue: T) => {
+    repeat(newLength - array.length, () => array.push(defaultValue));
+    return array;
+};
